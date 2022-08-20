@@ -1,0 +1,39 @@
+version: '3'
+services:
+
+  postgres:
+    image: "postgres:9.6-alpine"
+    container_name: postgres
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_DB=backend-db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+
+  kanban-app:
+    build: ./backend-app
+    container_name: backend-app
+    environment:
+      - DB_SERVER=postgres
+      - POSTGRES_DB=backend-db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 8080:8080
+    links:
+      - postgres
+
+  kanban-ui:
+    build: ./front-end
+    container_name: front-end
+    ports:
+      - 4200:80
+    links:
+      - kanban-app
+
+
+volumes:
+  database-data:
