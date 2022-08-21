@@ -1,0 +1,9 @@
+https://bezkoder.com/spring-boot-jwt-authentication/
+
+INSERT INTO my_project_db.roles(name,created_date) VALUES('ROLE_USER',sysdate());
+INSERT INTO my_project_db.roles(name,created_date) VALUES('ROLE_ADMIN',sysdate());
+INSERT INTO my_project_db.roles(name,created_date) VALUES('ROLE_PARENT',sysdate());
+
+DEPLOYMENT
+-----------------------------------------------------------
+https://medium.com/swlh/deploying-spring-boot-applications-15e14db25ff0
