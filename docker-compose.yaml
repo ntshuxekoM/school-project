@@ -13,9 +13,9 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
 
-  kanban-app:
-    build: ./backend-app
-    container_name: backend-app
+  phishing-detector:
+    build: ./phishing-detector
+    container_name: phishing-detector
     environment:
       - DB_SERVER=postgres
       - POSTGRES_DB=backend-db
@@ -26,13 +26,13 @@ services:
     links:
       - postgres
 
-  kanban-ui:
+  front-end:
     build: ./front-end
     container_name: front-end
     ports:
       - 4200:80
     links:
-      - kanban-app
+      - phishing-detector
 
 
 volumes:
