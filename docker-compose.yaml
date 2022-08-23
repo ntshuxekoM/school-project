@@ -1,30 +1,31 @@
 version: '3'
 services:
 
-  postgres:
-    image: "postgres:9.6-alpine"
-    container_name: postgres
-    volumes:
-      - database-data:/var/lib/postgresql/data
-    ports:
-      - 5433:5432
+  mysql:
+    image: mysql:8.0
+    restart: always
+    container_name: mysql
     environment:
-      - POSTGRES_DB=backend-db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - MYSQL_DATABASE=backend_db
+      - MYSQL_ROOT_PASSWORD=password
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   phishing-detector:
     build: ./phishing-detector
     container_name: phishing-detector
     environment:
-      - DB_SERVER=postgres
-      - POSTGRES_DB=backend-db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - DB_SERVER=mysql
+      - MYSQL_DATABASE=backend-db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
     ports:
       - 8080:8080
     links:
-      - postgres
+      - mysql
 
   front-end:
     build: ./front-end
