@@ -6,9 +6,9 @@ server:
     port: 8081
 spring:
     datasource:
-        password: Venus@18
         url: jdbc:mysql://localhost:3306/phishing_db
         username: root
+        password: password
     jpa:
         hibernate:
             ddl-auto: update
@@ -18,3 +18,9 @@ spring:
     mvc:
         pathmatch:
             matching-strategy: ANT_PATH_MATCHER
+    flyway:
+        url: jdbc:mysql://localhost:3306/phishing_db
+        user: "root"
+        password: "password"
+        schemas: phishing_db
+        enabled: false
