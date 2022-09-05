@@ -3,18 +3,16 @@
     <!-- Brand -->
     <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" routerLinkActive="active" [routerLink]="['/dashboard']">{{getTitle()}}</a>
     <!-- Form -->
-    <form class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+    <form #searchForm = "ngForm" (ngSubmit) = "onClickSubmit(searchForm.value)" class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
       <div class="form-group mb-0" [ngClass]="{ 'focused': focus === true }">
         <div class="input-group input-group-alternative">
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fas fa-search"></i></span>
           </div>
-          <input class="form-control" placeholder="Validate URL" type="text" (focus)="focus = true"
+          <input class="form-control" ngModel name="url" placeholder="Validate URL" type="text" (focus)="focus = true"
           (blur)="focus = false">
-
-         
         </div>
-        <button style="margin-left: 15px;" type="button" class="btn btn-primary my-4">Submit</button>
+        <button style="margin-left: 15px;" type="submit" class="btn btn-primary my-4">Submit</button>
       </div>
     </form>
     <!-- User -->

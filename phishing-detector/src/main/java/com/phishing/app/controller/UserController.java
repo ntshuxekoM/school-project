@@ -21,7 +21,6 @@ import java.util.Set;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/user")
 public class UserController {

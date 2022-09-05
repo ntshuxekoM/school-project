@@ -2,6 +2,9 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import { ROUTES } from '../sidebar/sidebar.component';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Router } from '@angular/router';
+import { SearchService } from 'src/app/service/search.service';
+import { AuthServiceService } from '../../service/auth-service.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +15,11 @@ export class NavbarComponent implements OnInit {
   public focus;
   public listTitles: any[];
   public location: Location;
-  constructor(location: Location,  private element: ElementRef, private router: Router) {
+  constructor(location: Location,  private element: ElementRef, 
+    private router: Router,
+    private searchService: SearchService,
+    private authService: AuthServiceService,
+    private toastr: ToastrService) {
     this.location = location;
   }
 
@@ -31,6 +38,20 @@ export class NavbarComponent implements OnInit {
         }
     }
     return 'Dashboard';
+  }
+
+  onClickSubmit(data: any) {
+    let user = this.authService.getLoggedUser();
+    this.searchService.validateUrl(data, user).subscribe({
+      next:(results) => {
+        console.log(JSON.stringify(results));
+        this.toastr.show(JSON.stringify(results));
+      },
+      error: (error) => {
+        console.log(JSON.stringify(error));
+        this.toastr.error(error.error.message);
+      }
+    })
   }
 
 }

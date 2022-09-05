@@ -15,18 +15,6 @@
     </svg>
   </div>
 </div>
-<!-- Page content 
-{
-  "name": "Christoph",
-  "surname": "Sibiya"
-  "idNumber": "9304246082082",
-  "cellNumber": "07292660765",
-  "email": "venussibiya@gmail.com",
-  "password": "Venus@18",
- 
-}
-
--->
 <div class="container mt--8 pb-5">
   <!-- Table -->
   <div class="row justify-content-center">
@@ -36,14 +24,13 @@
           <div class="text-muted text-center mt-2 mb-4"><small>Sign up</small></div>
         </div>
         <div class="card-body px-lg-5 py-lg-5">
-          <form role="form">
-
-            <div class="form-group">
+          <form #userRegistration = "ngForm" (ngSubmit) = "onClickSubmit(userRegistration.value)">
+            <div class="form-group" >
               <div class="input-group input-group-alternative mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                 </div>
-                <input class="form-control" placeholder="Name" type="text">
+                <input class="form-control" name="name" ngModel placeholder="Name" type="text">
               </div>
             </div>
 
@@ -52,7 +39,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                 </div>
-                <input class="form-control" placeholder="Surname" type="text">
+                <input class="form-control" name="surname" ngModel placeholder="Surname" type="text">
               </div>
             </div>
 
@@ -61,7 +48,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-badge"></i></span>
                 </div>
-                <input class="form-control" placeholder="ID Number" type="number">
+                <input class="form-control" name="idNumber" ngModel placeholder="ID Number" type="number">
               </div>
             </div>
 
@@ -70,7 +57,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-mobile-button"></i></span>
                 </div>
-                <input class="form-control" placeholder="Cell Number" type="number">
+                <input class="form-control" name="cellNumber" ngModel placeholder="Cell Number" type="number">
               </div>
             </div>
 
@@ -79,7 +66,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                 </div>
-                <input class="form-control" placeholder="Email" type="email">
+                <input class="form-control" name="email" ngModel placeholder="Email" type="email">
               </div>
             </div>
 
@@ -88,12 +75,12 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                 </div>
-                <input class="form-control" placeholder="Password" type="password">
+                <input class="form-control" name="password" ngModel placeholder="Password" type="password">
               </div>
 
             </div>
               <div class="text-center">
-              <button type="button" [routerLink]="'login'" class="btn btn-primary mt-4">Create account</button>
+              <button type="button" type="submit" class="btn btn-primary mt-4">Create account</button>
             </div>
           </form>
         </div>
