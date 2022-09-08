@@ -14,9 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignupRequest implements Serializable {
-    @NotBlank
-    @Size(max = 250)
-    @Email
     private String email;
     private String idNumber;
     private String name;
