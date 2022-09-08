@@ -1,5 +1,6 @@
 package com.phishing.app.payload;
 
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ChangePassRequest implements Serializable {
 
-    @NotBlank
+    @NotNull
     private Long userId;
     @NotBlank
     private String oldPassword;
