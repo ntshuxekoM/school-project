@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl("/dashboard");
       },
       error: (error) => {
-        this.toastr.error(error.error.message);
+        this.toastr.error('Invalid login details , Please enter the correct details');
       }
     })
   }

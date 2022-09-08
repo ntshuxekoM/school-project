@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthServiceService } from '../../service/auth-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -8,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  constructor(private service: AuthServiceService,private toastr: ToastrService) { }
+  constructor(private service: AuthServiceService,private toastr: ToastrService , private router: Router) { }
   
   ngOnInit() {
 
@@ -18,9 +19,10 @@ export class RegisterComponent implements OnInit {
     this.service.registerUser(data).subscribe({
       next:(results) => {
         this.toastr.info(results.message);
+        this.router.navigateByUrl("/login");
       },
       error: (error) => {
-        this.toastr.error(error.error.message);
+        this.toastr.error('Invalid input , Please Enter the correct details');
       }
     })
   }

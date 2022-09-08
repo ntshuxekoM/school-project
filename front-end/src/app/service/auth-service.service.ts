@@ -15,7 +15,6 @@ export class AuthServiceService {
   private appUrl = environment.appUrl;
 
   
-
   constructor(private http: HttpClient) { }
 
   registerUser(data: any): Observable<any> {
