@@ -9,7 +9,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/phishing_db
         username: root
-        password: password
+        password: admin
     jpa:
         hibernate:
             ddl-auto: update
