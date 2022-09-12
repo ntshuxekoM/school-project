@@ -60,8 +60,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
-                .antMatchers("/users/**").permitAll()
                 .antMatchers("/api/phishing-detector/api/test/hello/v1").permitAll()
                 .antMatchers("/api/title/**").permitAll()
                 .antMatchers("/v2/api-docs/**").permitAll()

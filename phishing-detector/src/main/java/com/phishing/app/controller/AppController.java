@@ -1,10 +1,13 @@
 package com.phishing.app.controller;
 
 import com.phishing.app.model.entities.User;
+import com.phishing.app.payload.DashboardData;
 import com.phishing.app.payload.MessageResponse;
 import com.phishing.app.payload.ValidateUrlRequest;
 import com.phishing.app.repository.entities.RoleRepository;
 import com.phishing.app.repository.entities.UserRepository;
+import com.phishing.app.repository.entities.ValidateUrlRequestRepository;
+import com.phishing.app.service.DashboardService;
 import com.phishing.app.utils.Constant;
 import java.net.URL;
 import java.util.Optional;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +37,39 @@ public class AppController {
     private RoleRepository roleRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private DashboardService dashboardService;
+    @Autowired
+    private ValidateUrlRequestRepository validateUrlRequestRepository;
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/get-dashboard-data/{userId}")
+    public ResponseEntity<?> getDashboardData(@PathVariable Long userId) {
+        LOGGER.info("Get Dashboard data. User: {}", userId);
+        Optional<User> optionalUser = userRepository.findById(userId);
+        DashboardData dashboardData = new DashboardData();
+        if (optionalUser.isPresent()) {
+
+            dashboardData.setBlackListedUrlsCard(dashboardService.getBlackListedUrlsCard());
+            dashboardData.setUsersCard(dashboardService.getUserCard());
+            dashboardData.setUrlVerificationCard(dashboardService.getVerificationCard());
+            dashboardData.setPhishingUrlsCard(dashboardService.getPhishingUrlsCard());
+
+            if (dashboardService.hasAdminRight(optionalUser.get().getRoles())) {
+                dashboardData.setUserDetailsList(dashboardService.getUserDetailsList());
+                dashboardData.setSiteList(dashboardService.getSiteList());
+            }
+
+            LOGGER.info("Get Dashboard data. User: {}, Data: {}", userId, dashboardData);
+            return ResponseEntity.ok(dashboardData);
+
+        } else {
+            LOGGER.error("User not found, User ID: {}", userId);
+            return ResponseEntity.badRequest()
+                .body(new MessageResponse(false, "Error: user details not found"));
+        }
+
+    }
 
 
     @PostMapping("/validate-url")
@@ -40,6 +78,7 @@ public class AppController {
         LOGGER.info("Validate Url Request: {}", request);
         try {
             Optional<User> optionalUser = userRepository.findById(request.getUserId());
+            validateUrlRequestRepository.save(buildRequest(optionalUser, request));
             if (optionalUser.isPresent()) {
                 //Validating URL
                 UrlValidator urlValidator = new UrlValidator();
@@ -67,6 +106,7 @@ public class AppController {
                 .body(new MessageResponse(false, "Service unavailable!"));
         }
     }
+
 
     private static int totalPhishingWords(String link) throws Exception {
         int count = 0;
@@ -96,5 +136,14 @@ public class AppController {
         return false;
     }
 
+    private com.phishing.app.model.entities.ValidateUrlRequest buildRequest(
+        Optional<User> optionalUser, ValidateUrlRequest request) {
+        User user = (optionalUser.isPresent() ? optionalUser.get() : null);
+        com.phishing.app.model.entities.ValidateUrlRequest urlRequest = new com.phishing.app.model.entities.ValidateUrlRequest();
+        urlRequest.setUrl(request.getUrl());
+        urlRequest.setCreateUser(user);
+        urlRequest.setLastUpdatedUser(user);
+        return urlRequest;
+    }
 
 }
