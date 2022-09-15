@@ -5,4 +5,6 @@ export class LoginResponce {
 	username: string;
 	email: string;
 	roles: string;
+	cellNumber : string
+	idNumber: string
 }

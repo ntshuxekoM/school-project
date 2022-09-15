@@ -13,7 +13,7 @@ import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
-import { SearchByUrlComponent } from './pages/search/search-by-url/search-by-url.component';
+
 
 
 @NgModule({
@@ -30,8 +30,7 @@ import { SearchByUrlComponent } from './pages/search/search-by-url/search-by-url
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    AuthLayoutComponent,
-    SearchByUrlComponent
+    AuthLayoutComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

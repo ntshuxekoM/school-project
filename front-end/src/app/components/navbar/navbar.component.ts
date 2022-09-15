@@ -15,6 +15,7 @@ export class NavbarComponent implements OnInit {
   public focus;
   public listTitles: any[];
   public location: Location;
+  currentUser : any;
   constructor(location: Location,  private element: ElementRef, 
     private router: Router,
     private searchService: SearchService,
@@ -25,6 +26,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.listTitles = ROUTES.filter(listTitle => listTitle);
+    this.currentUser = this.authService.getLoggedUser();
   }
   getTitle(){
     var titlee = this.location.prepareExternalUrl(this.location.path());
@@ -40,18 +42,6 @@ export class NavbarComponent implements OnInit {
     return 'Dashboard';
   }
 
-  onClickSubmit(data: any) {
-    let user = this.authService.getLoggedUser();
-    this.searchService.validateUrl(data, user).subscribe({
-      next:(results) => {
-        console.log(JSON.stringify(results));
-        this.toastr.show(JSON.stringify(results));
-      },
-      error: (error) => {
-        console.log(JSON.stringify(error));
-        this.toastr.error(error.error.message);
-      }
-    })
-  }
+ 
 
 }
