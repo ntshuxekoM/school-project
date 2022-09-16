@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import Chart from 'chart.js';
+import { ToastrService } from 'ngx-toastr';
+import { AuthServiceService } from 'src/app/service/auth-service.service';
+import { DashboardData } from 'src/app/model/dashboard-data';
 
 // core components
 import {
@@ -8,7 +11,7 @@ import {
   chartExample1,
   chartExample2
 } from "../../variables/charts";
-import { AuthServiceService } from 'src/app/service/auth-service.service';
+import { DashboardService } from 'src/app/service/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,46 +20,33 @@ import { AuthServiceService } from 'src/app/service/auth-service.service';
 })
 export class DashboardComponent implements OnInit {
 
-  public datasets: any;
-  public data: any;
-  public salesChart;
-  public clicked: boolean = true;
-  public clicked1: boolean = false;
-  
-  constructor(private service: AuthServiceService) {}
+  public dashboardData: DashboardData;
+
+  public showUserTable: boolean;
+
+  constructor(private service: DashboardService, private authSevice: AuthServiceService, private toastr: ToastrService) { }
 
   ngOnInit() {
-    this.datasets = [
-      [0, 20, 10, 30, 15, 40, 20, 60, 60],
-      [0, 20, 5, 25, 10, 30, 15, 40, 40]
-    ];
-    this.data = this.datasets[0];
+    this.service.getDashboardData(this.authSevice.getLoggedUser()).subscribe({
+      next: (results) => {
+        this.dashboardData = results;
+        if(this.dashboardData.userDetailsList !=null && this.dashboardData.userDetailsList.length>0){
+          this.showUserTable=true;
+        }else {
+          this.showUserTable=false;
+        }
+        console.log("User Size: " + this.dashboardData.siteList.length);
 
 
-    var chartOrders = document.getElementById('chart-orders');
-
-    parseOptions(Chart, chartOptions());
-
-
-    var ordersChart = new Chart(chartOrders, {
-      type: 'bar',
-      options: chartExample2.options,
-      data: chartExample2.data
-    });
-
-    var chartSales = document.getElementById('chart-sales');
-
-    this.salesChart = new Chart(chartSales, {
-			type: 'line',
-			options: chartExample1.options,
-			data: chartExample1.data
-		});
+      },
+      error: (error) => {
+        console.log("Error: "+error);
+        this.toastr.error('Servie unavailable');
+      }
+    })
   }
 
-
-  public updateOptions() {
-    this.salesChart.data.datasets[0].data = this.data;
-    this.salesChart.update();
-  }
 
 }
+
+

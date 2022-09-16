@@ -9,7 +9,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Black Listed URLs</h5>
-                  <span class="h2 font-weight-bold mb-0">350,897</span>
+                  <span class="h2 font-weight-bold mb-0">{{dashboardData.blackListedUrlsCard.total}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -18,8 +18,8 @@
                 </div>
               </div>
               <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-success mr-2"><i class="fa fa-calendar"></i> 1000</span>
-                <span class="text-nowrap">Added this month</span>
+                <span class="text-success mr-2"><i class="fa fa-calendar"></i> {{dashboardData.blackListedUrlsCard.subTotal}}</span>
+                <span class="text-nowrap">{{dashboardData.blackListedUrlsCard.subTotalTitle}}</span>
               </p>
             </div>
           </div>
@@ -30,7 +30,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Users</h5>
-                  <span class="h2 font-weight-bold mb-0">2,356</span>
+                  <span class="h2 font-weight-bold mb-0">{{dashboardData.usersCard.total}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -39,8 +39,8 @@
                 </div>
               </div>
               <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-danger mr-2"><i class="fas ffa-calendar"></i> 50</span>
-                <span class="text-nowrap">Registered this month</span>
+                <span class="text-danger mr-2"><i class="fas ffa-calendar"></i> {{dashboardData.usersCard.subTotal}}</span>
+                <span class="text-nowrap">{{dashboardData.usersCard.subTotalTitle}}</span>
               </p>
             </div>
           </div>
@@ -51,7 +51,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">URL Verification</h5>
-                  <span class="h2 font-weight-bold mb-0">92014</span>
+                  <span class="h2 font-weight-bold mb-0">{{dashboardData.urlVerificationCard.total}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -60,8 +60,8 @@
                 </div>
               </div>
               <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-warning mr-2"><i class="fas fa-calendar"></i> 5000</span>
-                <span class="text-nowrap"> Requests for this month</span>
+                <span class="text-warning mr-2"><i class="fas fa-calendar"></i> {{dashboardData.urlVerificationCard.subTotal}}</span>
+                <span class="text-nowrap">{{dashboardData.urlVerificationCard.subTotalTitle}}</span>
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Phishing URL</h5>
-                  <span class="h2 font-weight-bold mb-0">8056454</span>
+                  <span class="h2 font-weight-bold mb-0">{{dashboardData.phishingUrlsCard.total}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -81,8 +81,8 @@
                 </div>
               </div>
               <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-success mr-2"><i class="fas fa-calendar"></i> 700</span>
-                <span class="text-nowrap">Detected this month</span>
+                <span class="text-success mr-2"><i class="fas fa-calendar"></i> {{dashboardData.phishingUrlsCard.subTotal}}</span>
+                <span class="text-nowrap">{{dashboardData.phishingUrlsCard.subTotalTitle}}</span>
               </p>
             </div>
           </div>
@@ -94,7 +94,8 @@
 <div class="container-fluid mt--7">
 
   <div class="row mt-5">
-    <div class="col-xl-8 mb-5 mb-xl-0">
+
+    <div class="col-xl-6 mb-5 mb-xl-0" *ngIf="showUserTable == true">
       <div class="card shadow">
         <div class="card-header border-0">
           <div class="row align-items-center">
@@ -118,102 +119,34 @@
                 <th scope="col">Cell Number</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">
-                  Christoph
-                </th>
-                <td>
-                  Sibiya
-                </td>
-                <td>
-                  9604245265658
-                </td>
-                <td>
-                 venussibiya@gmail.com
-                </td>
-                <td>
-                  0729266076
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  Lameck
-                </th>
-                <td>
-                  Khoza
-                </td>
-                <td>
-                  9504246265865
-                </td>
-                <td>
-                 lameckkhoza@gmail.com
-                </td>
-                <td>
-                  0856566562
-                </td>
-              </tr>
+            <tbody *ngFor="let user of dashboardData.userDetailsList; index as i; first as isFirst">
 
               <tr>
                 <th scope="row">
-                  Respect
+                  {{user.name}}
                 </th>
                 <td>
-                  Khosa
+                  {{user.surname}}
                 </td>
                 <td>
-                  9304245265658
+                  {{user.idNumber}}
                 </td>
                 <td>
-                 repectkhoza@gmail.com
+                  {{user.email}}
                 </td>
                 <td>
-                  0729266565
+                  {{user.cellNumber}}
                 </td>
               </tr>
-
-              <tr>
-                <th scope="row">
-                  Christoph
-                </th>
-                <td>
-                  Sibiya
-                </td>
-                <td>
-                  9604245265658
-                </td>
-                <td>
-                 venussibiya@gmail.com
-                </td>
-                <td>
-                  0729266076
-                </td>
-              </tr>
-
-              <tr>
-                <th scope="row">
-                  Dunisani
-                </th>
-                <td>
-                  Hlonhwane
-                </td>
-                <td>
-                  9604245265658
-                </td>
-                <td>
-                 venussibiya@gmail.com
-                </td>
-                <td>
-                  0729266076
-                </td>
-              </tr>
-
+            
             </tbody>
           </table>
         </div>
       </div>
     </div>
-    <div class="col-xl-4">
+
+
+    <div class="col-xl-6" >
       <div class="card shadow">
         <div class="card-header border-0">
           <div class="row align-items-center">
@@ -235,77 +168,21 @@
                 <th scope="col">Search Count</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">
-                  Billy Cavoodle Puppies Home
-                </th>
-                <td>
-                  https://www.billycavoodlespuppies.com
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <span class="mr-2">60</span>
-                  </div>
-                </td>
-              </tr>
+            <tbody *ngFor="let site of dashboardData.siteList; index as i; first as isFirst">
 
               <tr>
                 <th scope="row">
-                  Bianca's Dream Home
+                  {{site.name}}
                 </th>
                 <td>
-                  https://www.biancasdreamhome.com
+                  {{site.url}}
                 </td>
                 <td>
                   <div class="d-flex align-items-center">
-                    <span class="mr-2">1000</span>
+                    <span class="mr-2">{{site.searchCount}}</span>
                   </div>
                 </td>
               </tr>
-
-              <tr>
-                <th scope="row">
-                  Billy Cavoodle Puppies Home
-                </th>
-                <td>
-                  https://www.billycavoodlespuppies.com
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <span class="mr-2">60</span>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <th scope="row">
-                  Daluja Terriers
-                </th>
-                <td>
-                  https://www.dalubullterriers.com
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <span class="mr-2">60</span>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <th scope="row">
-                  Orleans Trust Bank
-                </th>
-                <td>
-                  https://www.trstorleansbk.com
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <span class="mr-2">60</span>
-                  </div>
-                </td>
-              </tr>
-              
             </tbody>
           </table>
         </div>
