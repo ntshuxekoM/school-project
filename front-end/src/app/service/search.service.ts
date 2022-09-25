@@ -15,7 +15,7 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   validateUrl(url: string, user: LoginResponce): Observable<any> {
-    console.log(user.token);
+    //console.log(user.token);
     let headers = new HttpHeaders({'Content-Type': 'application/json', 'Authorization': 'Bearer ' + user.token});
     let options = { headers: headers };
     let jsonObject = this.prepareJsonObject(url, user.id);

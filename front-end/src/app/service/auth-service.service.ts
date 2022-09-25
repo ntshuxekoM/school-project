@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LoginResponce } from '../model/login-responce';
 import { Router } from '@angular/router';
+import { UserDetails } from '../model/user-details';
 
 const USER_SESSION = "user-session";
 
@@ -44,6 +45,14 @@ export class AuthServiceService {
     let options = { headers: headers };
     let jsonObject = JSON.stringify(data);
     return this.http.post<any>(this.appUrl + '/api/user/update_users', jsonObject , options );
+  }
+
+  getUserById(data: LoginResponce): Observable<UserDetails> {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("userId", data.id);
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + data.token });
+    let options = { headers: headers};
+    return this.http.get<UserDetails>(this.appUrl + '/api/user/find_users/'+ data.id, options);
   }
 
   saveLoggedUser(user: LoginResponce) {

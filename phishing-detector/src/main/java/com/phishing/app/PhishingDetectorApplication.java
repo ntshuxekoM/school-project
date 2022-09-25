@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @SpringBootApplication
-public class PhishingDetectorApplication {
+public class  PhishingDetectorApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PhishingDetectorApplication.class, args);

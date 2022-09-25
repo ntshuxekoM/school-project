@@ -20,6 +20,9 @@ export const ROUTES: RouteInfo[] = [
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
+  static filter(arg0: (listTitle: any) => any): any[] {
+    throw new Error('Method not implemented.');
+  }
 
   public menuItems: any[];
   public isCollapsed = true;

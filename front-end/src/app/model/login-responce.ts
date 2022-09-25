@@ -5,6 +5,9 @@ export class LoginResponce {
 	username: string;
 	email: string;
 	roles: string;
-	cellNumber : string
-	idNumber: string
+	fullName: string;
+
+	set setFullName(value: any) {
+        this.fullName = value;
+    }
 }
