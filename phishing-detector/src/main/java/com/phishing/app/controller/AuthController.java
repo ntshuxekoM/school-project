@@ -4,6 +4,7 @@ import com.phishing.app.model.entities.EmailContent;
 import com.phishing.app.model.entities.Role;
 import com.phishing.app.model.entities.User;
 import com.phishing.app.model.enums.ERole;
+import com.phishing.app.payload.ForgotPassRequest;
 import com.phishing.app.payload.JwtResponse;
 import com.phishing.app.payload.LoginRequest;
 import com.phishing.app.payload.MessageResponse;
@@ -34,8 +35,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -132,8 +131,9 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse(true, "User registered successfully!"));
     }
 
-    @GetMapping("/forgot-password/{email}")
-    public ResponseEntity<?> findUsers(@PathVariable("email") String email) {
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPassRequest request) {
+        String email = request.getEmail();
         LOGGER.info("Forgot password, email: {}", email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
