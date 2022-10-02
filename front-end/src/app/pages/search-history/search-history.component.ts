@@ -11,7 +11,7 @@ import { DashboardService } from 'src/app/service/dashboard.service';
 export class SearchHistoryComponent implements OnInit {
 
   constructor(private service: DashboardService, private authSevice: AuthServiceService, private toastr: ToastrService) { }
-public userUrlRequestList: any;
+  public userUrlRequestList: any;
   ngOnInit() {
     this.service.getAllUserUrlRequest(this.authSevice.getLoggedUser()).subscribe({
       next: (results) => {
@@ -19,7 +19,7 @@ public userUrlRequestList: any;
         console.log("Site List: " + this.userUrlRequestList);  
       },
       error: (error) => {
-        console.log("Error: " + error);
+        console.log(JSON.stringify(error));
         this.toastr.error('Servie unavailable');
       }
     })

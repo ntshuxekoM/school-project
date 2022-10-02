@@ -19,7 +19,7 @@ export class AllUsersComponent implements OnInit {
         console.log("User List: " + this.userList);  
       },
       error: (error) => {
-        console.log("Error: " + error);
+        console.log(JSON.stringify(error));
         this.toastr.error('Servie unavailable');
       }
     })

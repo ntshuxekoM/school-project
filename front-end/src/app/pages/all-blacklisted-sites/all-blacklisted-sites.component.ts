@@ -10,7 +10,7 @@ import { DashboardService } from 'src/app/service/dashboard.service';
 })
 export class AllBlacklistedSitesComponent implements OnInit {
 
-  constructor(private service: DashboardService, private authSevice: AuthServiceService, private toastr: ToastrService) { }
+constructor(private service: DashboardService, private authSevice: AuthServiceService, private toastr: ToastrService) { }
 public siteList: any;
   ngOnInit() {
     this.service.getAllBlackListedSites(this.authSevice.getLoggedUser()).subscribe({
@@ -19,7 +19,7 @@ public siteList: any;
         console.log("Site List: " + this.siteList);  
       },
       error: (error) => {
-        console.log("Error: " + error);
+        console.log(JSON.stringify(error));
         this.toastr.error('Servie unavailable');
       }
     })

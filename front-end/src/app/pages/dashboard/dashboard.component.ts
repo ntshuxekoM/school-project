@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
         
       },
       error: (error) => {
-        console.log("Error: " + error);
+        console.log(JSON.stringify(error));
         this.toastr.error('Servie unavailable');
       }
     })

@@ -10,6 +10,7 @@ import { AllBlacklistedSitesComponent } from 'src/app/pages/all-blacklisted-site
 import { AllUsersComponent } from 'src/app/pages/all-users/all-users.component';
 import { SearchHistoryComponent } from 'src/app/pages/search-history/search-history.component';
 
+
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user-profile',   component: UserProfileComponent },
@@ -20,4 +21,5 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'all-users',  component: AllUsersComponent },
     { path: 'search-history',  component: SearchHistoryComponent },
     { path: 'search-by-url',  component: SearchByUrlComponent }
+  
 ];

@@ -10,8 +10,8 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit, OnDestroy {
   constructor(private service: AuthServiceService,
-              private toastr: ToastrService,
-              private router: Router) {}
+    private toastr: ToastrService,
+    private router: Router) { }
 
   ngOnInit() {
   }
@@ -20,11 +20,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onClickSubmit(data: any) {
     this.service.login(data).subscribe({
-      next:(results) => {
+      next: (results) => {
         this.service.saveLoggedUser(results);
         this.router.navigateByUrl("/dashboard");
       },
       error: (error) => {
+        console.log(JSON.stringify(error));
         this.toastr.error('Invalid login details , Please enter the correct details');
       }
     })

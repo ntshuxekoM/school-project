@@ -18,6 +18,7 @@ import { AllBlacklistedSitesComponent } from 'src/app/pages/all-blacklisted-site
 import { AllUsersComponent } from 'src/app/pages/all-users/all-users.component';
 import { SearchHistoryComponent } from 'src/app/pages/search-history/search-history.component';
 
+
 @NgModule({
   imports: [
     CommonModule,
