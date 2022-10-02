@@ -22,7 +22,8 @@ export class RegisterComponent implements OnInit {
         this.router.navigateByUrl("/login");
       },
       error: (error) => {
-        this.toastr.error('Invalid input , Please Enter the correct details');
+        console.log(JSON.stringify(error));
+        this.toastr.error(error.error.message);
       }
     })
   }

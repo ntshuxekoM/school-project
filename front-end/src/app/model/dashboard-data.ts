@@ -9,4 +9,5 @@ export class DashboardData {
     phishingUrlsCard: CardData;
     userDetailsList: Array<UserDetails>;
     siteList: any;
+    userUrlRequestList: any;
 }

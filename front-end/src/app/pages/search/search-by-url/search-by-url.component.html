@@ -1,13 +1,54 @@
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" style="min-height: 250px; background-image: url(assets/img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+  style="min-height: 250px; background-image: url(assets/img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
   <!-- Mask -->
   <span class="mask bg-gradient-danger opacity-8"></span>
 
 </div>
+
+<style>
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 250px;
+    height: 250px;
+    -webkit-animation: spin 2s linear infinite;
+    /* Safari */
+    animation: spin 1s linear infinite;
+  }
+
+  .center-item {
+    margin: auto;
+    padding: 10px;
+  }
+
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
 <div class="container-fluid mt--7">
   <div class="row">
     <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
     </div>
-    <div class="col-xl-8 order-xl-1">
+    <div class="col-xl-6 order-xl-1">
       <div class="card bg-secondary shadow">
         <div class="card-header bg-white border-0">
           <div class="row align-items-center">
@@ -17,29 +58,140 @@
           </div>
         </div>
         <div class="card-body">
-          <form #searchForm = "ngForm" (ngSubmit) = "onClickSubmit(searchForm.value)">
+          <form #searchForm="ngForm" (ngSubmit)="onClickSubmit(searchForm.value)">
             <h6 class="heading-small text-muted mb-4">Please paste your url</h6>
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-lg-6">
                 </div>
               </div>
+
               <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-cell">Search By Url here </label>
-                    <input ngModel name="url" type="text" id="input-cell" class="form-control form-control-alternative" placeholder="Validate URL" value="">
+                    <input style="width: 100%;" ngModel name="url" type="text" id="input-cell"
+                      class="form-control form-control-alternative" placeholder="Validate URL" value="">
                   </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-12">
+                  <button type="submit" class="btn btn-primary my-4">Verify</button>
                 </div>
-                <button type="submit" class="btn btn-primary my-4">Verify</button>
+
               </div>
+
             </div>
             <hr class="my-4" />
           </form>
         </div>
       </div>
     </div>
+
+
+    <div [hidden]="cardToShow !='safe'" class="col-xl-6 order-xl-1" style="color: white;">
+
+      <div class="card" style="color: white;">
+
+        <div class="card-body" style="color: white;">
+
+          <img src="../../../../assets/img/Safe-Green-Check-icon.jpg" width="90%" height="35%" alt="Safe Site" />
+
+          <h4 style="color: green;text-align: center;">
+            No phishing detected, this site is safe to access.
+          </h4>
+          <div class="pl-lg-4">
+            <div class="row">
+              <div class="col-lg-6">
+              </div>
+            </div>
+            <div class="row">
+
+              <a href="{{searchUrl}}" class="center-item" target="_blank">
+                <button style="align-items: center;" class="btn btn-success my-4">CLICK TO ACCESS THE SITE</button>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+    <div [hidden]="cardToShow !='unsafe'" class="col-xl-6 order-xl-1" style="color: white;">
+
+      <div class="card" style="color: white;">
+
+        <div class="card-body" style="color: white;">
+
+          <img src="../../../../assets/img/hero-image-1013x440.jpg.optimal.jpg" width="100%" height="45%"
+            alt="Safe Site" />
+
+          <h3 style="color: red;">
+            Suspected Phishing Site:
+          </h3>
+
+          <p style="color: red;">
+            The url has been identified as a "phishing" site. This site is desiged to trick you into disclosing personal
+            or finacial information, usually by creating a copy of a legitimate website.
+          </p>
+          <div class="pl-lg-4">
+            <div class="row">
+              <div class="col-lg-6">
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div [hidden]="cardToShow !='info'" class="col-xl-6 order-xl-1" style="color: white;">
+
+      <div class="card" style="color: white;">
+
+        <div class="card-body" style="color: white;">
+
+          <img src="../../../../assets/img/verify.png" width="85%" height="30%" alt="Safe Site" />
+
+          <h3 style="color: rgb(49, 170, 240);">
+            Welcome to Phishing Detector!
+          </h3>
+
+          <p style="color: rgb(49, 170, 240);">
+            This system is capable of detecting most of the phishing techniques and
+            aims at providing full-proof security from all kinds of phishing attacks.
+            To avoid being a victim of phishing, enter and verify the url/site you want to visit
+          </p>
+
+
+        </div>
+      </div>
+    </div>
+
+
+    <div [hidden]="cardToShow !='loading'" class="col-xl-6 order-xl-1" style="color: white;">
+
+      <div class="card" style="color: white;">
+
+        <div class="card-body" style="color: white;">
+
+          <div class="loader center-item"></div>
+
+          <h3 style="color: rgb(49, 170, 240);text-align: center;">
+            URL verification in progress, please wait...
+          </h3>
+
+          <br/>  <br/>  <br/>
+
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </div>

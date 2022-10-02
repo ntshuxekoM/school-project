@@ -32,7 +32,7 @@
                   <span class="description"></span>
                 </div>
                 <div>
-                  <span class="heading">{{totalRequest}}</span>
+                  <span class="heading">{{userDetails.requestCount}}</span>
                   <span class="description">Requests</span>
                 </div>
                 <div>
@@ -44,7 +44,7 @@
           </div>
           <div class="text-center">
             <h3>
-              {{currentUser.fullName}}<span class="font-weight-light"></span>
+              {{userDetails.name}} {{userDetails.surname}}<span class="font-weight-light"></span>
             </h3>
             <div class="h5 font-weight-300">
               <i class="ni location_pin mr-2"></i>ID Nuber:
@@ -93,16 +93,16 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-name">Name</label>
-                      <input type="text" name="name" class="form-control
+                      <label class="form-control-label" for="name">Name</label>
+                      <input type="text" id= "name" name="name" class="form-control
                         form-control-alternative" placeholder="name"
                         [(ngModel)]="userDetails.name">
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-surname">Surname</label>
-                      <input type="text" name="surname" class="form-control
+                      <label class="form-control-label" for="surname">Surname</label>
+                      <input type="text" name="surname"  id="surname" class="form-control
                         form-control-alternative"
                         [(ngModel)]="userDetails.surname">
                     </div>
@@ -111,17 +111,17 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-cell">Cell
+                      <label class="form-control-label" for="cellNumber">Cell
                         Number</label>
-                      <input type="text" name="cellNumber" class="form-control
+                      <input type="text" name="cellNumber" id="cellNumber" class="form-control
                         form-control-alternative" placeholder="Cell Number"
                         [(ngModel)]="userDetails.cellNumber">
                     </div>
                   </div>
                   <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-email">Email</label>
-                      <input type="text" name="email" class="form-control
+                      <label class="form-control-label" for="email">Email</label>
+                      <input type="text" name="email" id="email"  class="form-control
                         form-control-alternative" placeholder="Email"
                         [(ngModel)]="userDetails.email">
                     </div>
@@ -142,9 +142,9 @@
                 <div class="row">
                   <div class="col-lg-3">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-old-pass">Old
+                      <label class="form-control-label" for="oldPassword">Old
                         Password</label>
-                      <input type="password" ngModel name="oldPassword"
+                      <input type="password" ngModel name="oldPassword" id="oldPassword"
                         class="form-control form-control-alternative"
                         placeholder="Old Password" value="">
                     </div>
@@ -152,9 +152,9 @@
 
                   <div class="col-lg-3">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-new-pass">New
+                      <label class="form-control-label" for="newPassword">New
                         Password</label>
-                      <input type="password" ngModel name="newPassword"
+                      <input type="password" ngModel name="newPassword" id="newPassword"
                         class="form-control form-control-alternative"
                         placeholder="New Password" value="">
                     </div>
@@ -163,8 +163,8 @@
                   <div class="col-lg-3">
                     <div class="form-group">
                       <label class="form-control-label"
-                        for="input-confirm-pass">Confirm Password</label>
-                      <input type="password" ngModel name="confirmPassword"
+                        for="confirmPassword">Confirm Password</label>
+                      <input type="password" ngModel name="confirmPassword" id="confirmPassword"
                         class="form-control form-control-alternative"
                         placeholder="Confirm Password" value="">
                     </div>

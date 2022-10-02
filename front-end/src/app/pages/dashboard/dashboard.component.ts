@@ -3,7 +3,7 @@ import Chart from 'chart.js';
 import { ToastrService } from 'ngx-toastr';
 import { AuthServiceService } from 'src/app/service/auth-service.service';
 import { DashboardData } from 'src/app/model/dashboard-data';
-
+import { DashboardService } from 'src/app/service/dashboard.service';
 // core components
 import {
   chartOptions,
@@ -11,7 +11,7 @@ import {
   chartExample1,
   chartExample2
 } from "../../variables/charts";
-import { DashboardService } from 'src/app/service/dashboard.service';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -24,23 +24,21 @@ export class DashboardComponent implements OnInit {
 
   public showUserTable: boolean;
 
+  public showSearchHistoty: boolean;
+
   constructor(private service: DashboardService, private authSevice: AuthServiceService, private toastr: ToastrService) { }
 
   ngOnInit() {
     this.service.getDashboardData(this.authSevice.getLoggedUser()).subscribe({
       next: (results) => {
         this.dashboardData = results;
-        if(this.dashboardData.userDetailsList !=null && this.dashboardData.userDetailsList.length>0){
-          this.showUserTable=true;
-        }else {
-          this.showUserTable=false;
-        }
-        console.log("User Size: " + this.dashboardData.siteList.length);
 
-
+        this.showUserTable = this.dashboardData.userDetailsList != null && this.dashboardData.userDetailsList.length > 0;
+        this.showSearchHistoty = this.dashboardData.userUrlRequestList != null && this.dashboardData.userUrlRequestList.length > 0;
+        
       },
       error: (error) => {
-        console.log("Error: "+error);
+        console.log("Error: " + error);
         this.toastr.error('Servie unavailable');
       }
     })

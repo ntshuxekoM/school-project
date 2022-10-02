@@ -6,4 +6,5 @@ export class UserDetails {
 	roles: any;
     idNumber: string;
     cellNumber: string;
+    requestCount: number;
 }
