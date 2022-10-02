@@ -1,0 +1,55 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
+    <div class="container-fluid">
+      <div class="header-body">
+        <!-- Card stats -->
+        <div class="row">
+     
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid mt--7">
+  
+    <div class="row mt-12">
+      <div class="col-xl-12" >
+        <div class="card shadow">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0">All Black Listed Sites</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <!-- Projects table -->
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Site Name</th>
+                  <th scope="col">URL</th>
+                  <th scope="col">Search Count</th>
+                </tr>
+              </thead>
+              <tbody *ngFor="let site of siteList; index as i; first as isFirst">
+  
+                <tr>
+                  <th scope="row">
+                    {{site.name}}
+                  </th>
+                  <td>
+                    {{site.url}}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <span class="mr-2">{{site.searchCount}}</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

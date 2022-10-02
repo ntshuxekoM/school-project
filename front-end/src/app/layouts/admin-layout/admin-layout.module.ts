@@ -14,6 +14,9 @@ import { TablesComponent } from '../../pages/tables/tables.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // import { ToastrModule } from 'ngx-toastr';
 import { SearchByUrlComponent } from 'src/app/pages/search/search-by-url/search-by-url.component';
+import { AllBlacklistedSitesComponent } from 'src/app/pages/all-blacklisted-sites/all-blacklisted-sites.component';
+import { AllUsersComponent } from 'src/app/pages/all-users/all-users.component';
+import { SearchHistoryComponent } from 'src/app/pages/search-history/search-history.component';
 
 @NgModule({
   imports: [
@@ -30,7 +33,10 @@ import { SearchByUrlComponent } from 'src/app/pages/search/search-by-url/search-
     TablesComponent,
     IconsComponent,
     MapsComponent,
-    SearchByUrlComponent
+    SearchByUrlComponent,
+    AllBlacklistedSitesComponent,
+    AllUsersComponent,
+    SearchHistoryComponent
   ]
 })
 
