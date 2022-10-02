@@ -9,7 +9,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/phishing_db
         username: root
-        password: admin
+        password: Venus@18
     jpa:
         hibernate:
             ddl-auto: update
@@ -22,6 +22,6 @@ spring:
     flyway:
         url: jdbc:mysql://localhost:3306/phishing_db
         user: "root"
-        password: "password"
+        password: "Venus@18"
         schemas: phishing_db
         enabled: false

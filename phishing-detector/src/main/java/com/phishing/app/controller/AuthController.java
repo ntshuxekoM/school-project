@@ -18,6 +18,8 @@ import com.phishing.app.validator.ValidatorService;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -32,6 +34,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,14 +127,35 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        saveEmailContent(user, signUpRequest.getPassword());
+        saveRegisterEmailContent(user, signUpRequest.getPassword());
 
         return ResponseEntity.ok(new MessageResponse(true, "User registered successfully!"));
     }
 
-    private void saveEmailContent(User user, String password) {
+    @GetMapping("/forgot-password/{email}")
+    public ResponseEntity<?> findUsers(@PathVariable("email") String email) {
+        LOGGER.info("Forgot password, email: {}", email);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            String newPassword = generatePassword();
+            user.setPassword(encoder.encode(newPassword));
+            saveForgotPassEmailContent(user, newPassword);
+            userRepository.save(user);
+            return ResponseEntity.ok()
+                .body(new MessageResponse(true,
+                    "Your password has been updated and sent to your email"));
+        } else {
+            LOGGER.error("User not found, User email: {}", email);
+            return ResponseEntity.badRequest()
+                .body(new MessageResponse(false,
+                    "Error: No registered user with the email provided"));
+        }
+    }
+
+    private void saveRegisterEmailContent(User user, String password) {
         try {
-            LOGGER.info("Saving email content for [Name: {}, Surname: {}, email: {}]",
+            LOGGER.info("Saving registration email content for [Name: {}, Surname: {}, email: {}]",
                 user.getName(), user.getSurname(), user.getEmail());
 
             String welcome = "<p>Hi #NAME#,</p>"
@@ -159,5 +184,58 @@ public class AuthController {
         }
     }
 
+    private void saveForgotPassEmailContent(User user, String password) {
+        try {
+            LOGGER.info(
+                "Saving forgot password email content for [Name: {}, Surname: {}, email: {}]",
+                user.getName(), user.getSurname(), user.getEmail());
 
+            String welcome = "<p>Hi #NAME#,</p>"
+                + "<br/>"
+                + "<p>Your password has been updated, below please find your new login details.</p>"
+                + "<br/>"
+                + "<p><b>User Name: </b>  " + user.getEmail() + "</p>"
+                + "<p><b>Password: </b>  " + password + "</p>"
+                + "<p>Our Best</p>"
+                + "<p>Phishing Detractor Team</p>"
+                + "<br/>";
+            welcome = welcome.replaceAll("#NAME#", user.getName() + " " + user.getSurname());
+            EmailContent emailContent = new EmailContent();
+            emailContent.setFromEmail(Constant.APP_EMAIL);
+            emailContent.setToEmail(user.getEmail());
+            emailContent.setSubject("Phishing Detractor Forgot Password");
+            emailContent.setContentMssg(welcome);
+            emailContent.setRetryCount(0);
+            emailContent.setRunDate(new Date());
+            emailContent.setCreateUser(user);
+            emailContent.setLastUpdatedUser(user);
+            emailContentRepository.save(emailContent);
+        } catch (Exception e) {
+            LOGGER.error("Error when saving forgot password email email: ", e);
+        }
+    }
+
+    public String generatePassword() {
+
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                (random.nextFloat() * (rightLimit - leftLimit + 1));
+            Random rand = new Random();
+            int n = rand.nextInt(15) + 1;
+            if (n > 10) {
+                buffer.append(Character.toUpperCase((char) randomLimitedInt));
+            } else {
+                buffer.append((char) randomLimitedInt);
+            }
+        }
+        String generatedString = buffer.toString();
+        generatedString = generatedString.trim();
+        System.out.println(generatedString);
+        return generatedString;
+    }
 }

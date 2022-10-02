@@ -17,4 +17,5 @@ public class DashboardData implements Serializable {
     private CardData phishingUrlsCard;
     private List<UserDetails> userDetailsList;
     private List<Site> siteList;
+    private List<UserUrlRequest> userUrlRequestList;
 }

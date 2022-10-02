@@ -21,5 +21,6 @@ public class UserDetails implements Serializable {
     private Set<String> roles = new HashSet<>();
     private String idNumber;
     private String cellNumber;
+    private int requestCount;
 
 }

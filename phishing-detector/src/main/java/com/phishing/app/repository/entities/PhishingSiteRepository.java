@@ -10,4 +10,5 @@ public interface PhishingSiteRepository extends JpaRepository<PhishingSite, Long
 
     @Query("SELECT COUNT(createdDate) from PhishingSite o where EXTRACT(month FROM o.createdDate) = EXTRACT(month FROM sysdate())")
     int countForMonth();
+
 }

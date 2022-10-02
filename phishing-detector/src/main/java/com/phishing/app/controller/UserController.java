@@ -8,8 +8,11 @@ import com.phishing.app.payload.ChangePassRequest;
 import com.phishing.app.payload.MessageResponse;
 import com.phishing.app.payload.UserDetails;
 import com.phishing.app.repository.entities.UserRepository;
+import com.phishing.app.repository.entities.ValidateUrlRequestRepository;
 import com.phishing.app.validator.ValidatorService;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.Valid;
@@ -20,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +41,8 @@ public class UserController {
     private PasswordEncoder encoder;
     @Autowired
     private ValidatorService validatorService;
+    @Autowired
+    private ValidateUrlRequestRepository validateUrlRequestRepository;
 
     @GetMapping("/find_users/{id}")
     @PreAuthorize("hasRole('USER')")
@@ -53,6 +57,8 @@ public class UserController {
                 roles.add(role.getName().name());
             }
             userDetails.setRoles(roles);
+            userDetails.setRequestCount(
+                (int) validateUrlRequestRepository.countByCreateUser(optionalUser.get()));
             LOGGER.info("User Details: {}", userDetails);
             return ResponseEntity.ok(userDetails);
         } else {
@@ -113,6 +119,38 @@ public class UserController {
         } else {
             LOGGER.error("User not found, User ID: {}", changePassRequest.getUserId());
             return ResponseEntity.badRequest().body(new MessageResponse(false, "Invalid user ID!"));
+        }
+    }
+
+    @GetMapping("/find_all_users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> findAllUsers() {
+        LOGGER.info("Finding all user...");
+        List<User> users = userRepository.findAll();
+        if (users != null && !users.isEmpty()) {
+            List<UserDetails> userDetailList = new ArrayList<>();
+
+            users.forEach(user -> {
+                UserDetails userDetails = new UserDetails();
+                copyProperties(user, userDetails);
+                Set<String> roles = new HashSet<>();
+                for (Role role : user.getRoles()) {
+                    roles.add(role.getName().name());
+                }
+                userDetails.setRoles(roles);
+                userDetails.setRequestCount(
+                    (int) validateUrlRequestRepository.countByCreateUser(user));
+
+                userDetailList.add(userDetails);
+            });
+
+            LOGGER.info("All Users size {}", userDetailList.size());
+            return ResponseEntity.ok(userDetailList);
+
+        } else {
+            LOGGER.error("No User found...");
+            return ResponseEntity.badRequest()
+                .body(new MessageResponse(false, "Error: No users"));
         }
     }
 

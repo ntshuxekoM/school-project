@@ -14,11 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "validate_url_request", uniqueConstraints = {@UniqueConstraint(columnNames = "url")})
+@Table(name = "validate_url_request")
 public class ValidateUrlRequest extends AbstractEntity {
 
     @NotBlank
     @Size(max = 250)
     private String url;
+    private Boolean safeSite;
 
 }

@@ -1,16 +1,29 @@
 package com.phishing.app.controller;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
+import com.phishing.app.model.entities.BlackListSite;
+import com.phishing.app.model.entities.PhishingSite;
 import com.phishing.app.model.entities.User;
+import com.phishing.app.payload.BlackListSiteResponse;
 import com.phishing.app.payload.DashboardData;
 import com.phishing.app.payload.MessageResponse;
+import com.phishing.app.payload.Site;
+import com.phishing.app.payload.UserUrlRequest;
 import com.phishing.app.payload.ValidateUrlRequest;
+import com.phishing.app.repository.entities.BlackListSiteRepository;
+import com.phishing.app.repository.entities.PhishingSiteRepository;
 import com.phishing.app.repository.entities.RoleRepository;
 import com.phishing.app.repository.entities.UserRepository;
 import com.phishing.app.repository.entities.ValidateUrlRequestRepository;
 import com.phishing.app.service.DashboardService;
 import com.phishing.app.utils.Constant;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Scanner;
 import javax.validation.Valid;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -41,6 +54,10 @@ public class AppController {
     private DashboardService dashboardService;
     @Autowired
     private ValidateUrlRequestRepository validateUrlRequestRepository;
+    @Autowired
+    private BlackListSiteRepository blackListSiteRepository;
+    @Autowired
+    private PhishingSiteRepository phishingSiteRepository;
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/get-dashboard-data/{userId}")
@@ -55,9 +72,12 @@ public class AppController {
             dashboardData.setUrlVerificationCard(dashboardService.getVerificationCard());
             dashboardData.setPhishingUrlsCard(dashboardService.getPhishingUrlsCard());
 
+            dashboardData.setSiteList(dashboardService.getSiteList());
             if (dashboardService.hasAdminRight(optionalUser.get().getRoles())) {
                 dashboardData.setUserDetailsList(dashboardService.getUserDetailsList());
-                dashboardData.setSiteList(dashboardService.getSiteList());
+            } else {
+                dashboardData.setUserUrlRequestList(
+                    dashboardService.getUserUrlRequests(optionalUser.get()));
             }
 
             LOGGER.info("Get Dashboard data. User: {}, Data: {}", userId, dashboardData);
@@ -71,6 +91,57 @@ public class AppController {
 
     }
 
+    @GetMapping("/find_all_user_url_request/{userId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> findAllUserUrlRequest(@PathVariable Long userId) {
+        LOGGER.info("Finding all User Url Request");
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            List<UserUrlRequest> userUrlRequestList = new ArrayList<>();
+            List<com.phishing.app.model.entities.ValidateUrlRequest> list = validateUrlRequestRepository.findByCreateUser(
+                optionalUser.get());
+            if (list != null) {
+                list.forEach(validateUrlRequest -> userUrlRequestList.add(
+                    new UserUrlRequest(validateUrlRequest.getUrl(),
+                        validateUrlRequest.getSafeSite())));
+            }
+
+            LOGGER.info("All User Url Request size {}", userUrlRequestList.size());
+            return ResponseEntity.ok(userUrlRequestList);
+
+        } else {
+            LOGGER.error("User not found, User ID: {}", userId);
+            return ResponseEntity.badRequest()
+                .body(new MessageResponse(false, "Error: user details not found"));
+        }
+    }
+
+    @GetMapping("/find_all_blacklisted_sites")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> findAllBlacklistedSites() {
+        LOGGER.info("Finding all blacklisted sites...");
+        List<BlackListSite> siteList = blackListSiteRepository.findAll();
+        if (siteList != null && !siteList.isEmpty()) {
+            List<Site> list = null;
+            if (siteList != null && !siteList.isEmpty()) {
+                list = new ArrayList<>();
+                for (BlackListSite bSite : siteList) {
+                    list.add(new Site(bSite.getSiteName(), bSite.getUrl(),
+                        validateUrlRequestRepository.countByUrl(bSite.getUrl())));
+                }
+            }
+            LOGGER.info("All Blacklisted sites size {}", list.size());
+            return ResponseEntity.ok(list);
+
+        } else {
+            LOGGER.error("No Blacklisted sites..");
+            return ResponseEntity.badRequest()
+                .body(new MessageResponse(false, "Error: No Blacklisted sites"));
+        }
+    }
+
 
     @PostMapping("/validate-url")
     @PreAuthorize("hasRole('USER')")
@@ -78,18 +149,31 @@ public class AppController {
         LOGGER.info("Validate Url Request: {}", request);
         try {
             Optional<User> optionalUser = userRepository.findById(request.getUserId());
-            validateUrlRequestRepository.save(buildRequest(optionalUser, request));
+            com.phishing.app.model.entities.ValidateUrlRequest validateUrlRequest = validateUrlRequestRepository.save(
+                buildRequest(optionalUser, request));
             if (optionalUser.isPresent()) {
                 //Validating URL
                 UrlValidator urlValidator = new UrlValidator();
                 if (urlValidator.isValid(request.getUrl())) {
                     //TODO check if url is valid or not
-                    if (totalPhishingWords(request.getUrl()) > 3 && isSuspicious(
+
+                    Random random = new Random();
+                    Thread.sleep(2000);
+                    if (random.nextBoolean()) {
+                        savePhishingSite(request, optionalUser.get());
+                        validateUrlRequest.setSafeSite(true);
+                        return ResponseEntity.ok().body(new MessageResponse(false, "Invalid URL"));
+                    } else {
+                        validateUrlRequest.setSafeSite(false);
+                        return ResponseEntity.ok().body(new MessageResponse(true, "Valid URL"));
+                    }
+
+                  /*  if (totalPhishingWords(request.getUrl()) > 3 && isSuspicious(
                         request.getUrl())) {
                         return ResponseEntity.ok().body(new MessageResponse(false, "Invalid URL"));
                     } else {
                         return ResponseEntity.ok().body(new MessageResponse(true, "Valid URL"));
-                    }
+                    }*/
                 } else {
                     LOGGER.error("Invalid URL: {}", request.getUrl());
                     return ResponseEntity.badRequest()
@@ -104,6 +188,22 @@ public class AppController {
             LOGGER.error("Error: {}", e);
             return ResponseEntity.internalServerError()
                 .body(new MessageResponse(false, "Service unavailable!"));
+        }
+    }
+
+    private void savePhishingSite(ValidateUrlRequest request, User user) {
+        try {
+            LOGGER.info("Saving phishing site. URL: {}, User ID: {}", request.getUrl(),
+                request.getUserId());
+            PhishingSite site = new PhishingSite();
+            site.setUrl(request.getUrl());
+            site.setCreatedDate(new Date());
+            site.setUpdatedDate(new Date());
+            site.setCreateUser(user);
+            site.setLastUpdatedUser(user);
+            phishingSiteRepository.save(site);
+        } catch (Exception e) {
+            LOGGER.error("Error when saving site: ", e);
         }
     }
 

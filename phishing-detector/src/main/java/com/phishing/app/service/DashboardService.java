@@ -3,10 +3,12 @@ package com.phishing.app.service;
 import com.phishing.app.model.entities.BlackListSite;
 import com.phishing.app.model.entities.Role;
 import com.phishing.app.model.entities.User;
+import com.phishing.app.model.entities.ValidateUrlRequest;
 import com.phishing.app.model.enums.ERole;
 import com.phishing.app.payload.CardData;
 import com.phishing.app.payload.Site;
 import com.phishing.app.payload.UserDetails;
+import com.phishing.app.payload.UserUrlRequest;
 import com.phishing.app.repository.entities.BlackListSiteRepository;
 import com.phishing.app.repository.entities.PhishingSiteRepository;
 import com.phishing.app.repository.entities.UserRepository;
@@ -16,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,7 +79,7 @@ public class DashboardService {
 
     public List<UserDetails> getUserDetailsList() {
         List<UserDetails> userDetailsList = null;
-        List<User> userList = userRepository.findAll(Sort.by(Direction.ASC, "name"));
+        List<User> userList = userRepository.findFirst5ByOrderByName();
         if (userList != null && !userList.isEmpty()) {
             userDetailsList = new ArrayList<>();
             for (User user : userList) {
@@ -88,7 +88,8 @@ public class DashboardService {
                     roles.add(role.getName().name());
                 }
                 userDetailsList.add(new UserDetails(user.getId(), user.getName(), user.getSurname(),
-                    user.getEmail(), roles, user.getIdNumber(), user.getCellNumber()));
+                    user.getEmail(), roles, user.getIdNumber(), user.getCellNumber(),
+                    (int) validateUrlRequestRepository.countByCreateUser(user)));
             }
 
         }
@@ -97,7 +98,7 @@ public class DashboardService {
 
     public List<Site> getSiteList() {
         List<Site> list = null;
-        List<BlackListSite> siteList = blackListSiteRepository.findAll();
+        List<BlackListSite> siteList = blackListSiteRepository.findFirst5ByOrderBySiteName();
         if (siteList != null && !siteList.isEmpty()) {
             list = new ArrayList<>();
             for (BlackListSite bSite : siteList) {
@@ -109,4 +110,15 @@ public class DashboardService {
     }
 
 
+    public List<UserUrlRequest> getUserUrlRequests(User user) {
+
+        List<UserUrlRequest> userUrlRequestList = new ArrayList<>();
+        List<ValidateUrlRequest> list = validateUrlRequestRepository.findFirst5ByCreateUser(user);
+        if (list != null) {
+            list.forEach(validateUrlRequest -> userUrlRequestList.add(
+                new UserUrlRequest(validateUrlRequest.getUrl(),
+                    validateUrlRequest.getSafeSite())));
+        }
+        return userUrlRequestList;
+    }
 }
