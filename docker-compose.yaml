@@ -6,7 +6,7 @@ services:
     restart: always
     container_name: mysql
     environment:
-      - MYSQL_DATABASE=backend_db
+      - MYSQL_DATABASE=phishing_db
       - MYSQL_ROOT_PASSWORD=password
     ports:
       - '3306:3306'
@@ -15,20 +15,16 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   phishing-detector:
-    build: ./phishing-detector
+    image: ntshuxeko/phishing-detector:latest
     container_name: phishing-detector
-    environment:
-      - DB_SERVER=mysql
-      - MYSQL_DATABASE=backend-db
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=password
+    restart: always
     ports:
-      - 8080:8080
+      - '8080:8080'
     links:
       - mysql
 
   front-end:
-    build: ./front-end
+    image: ./front-end
     container_name: front-end
     ports:
       - 4200:80
@@ -37,4 +33,4 @@ services:
 
 
 volumes:
-  database-data:
+  db:
