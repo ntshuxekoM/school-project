@@ -3,10 +3,12 @@ package com.phishing.app.model.entities;
 
 import com.phishing.app.model.common.AbstractEntity;
 import com.phishing.app.model.enums.ERole;
+import lombok.Builder;
 
 import javax.persistence.*;
 
 @Entity
+@Builder
 @Table(name = "role")
 public class Role extends AbstractEntity {
 
