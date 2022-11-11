@@ -37,7 +37,7 @@ public class SpringFoxConfig {
         List<VendorExtension> vendorExtensionList = new ArrayList<>();
         Contact contact = new Contact("Akani", "N/A", "akani@gmail.com");
         ApiInfo apiInfo = new ApiInfo(
-                "Phishing Detractor",
+                "Phishing Detector",
                 "An application to detect phishing",
                 "v1",
                 "termsOfServiceUrl", contact,

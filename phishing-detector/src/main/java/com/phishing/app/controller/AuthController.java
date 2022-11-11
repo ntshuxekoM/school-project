@@ -166,13 +166,13 @@ public class AuthController {
                 + "<p><b>Password: </b>  " + password + "</p>"
                 + "<p>Thank you for joining us</p>"
                 + "<p>Our Best</p>"
-                + "<p>Phishing Detractor Team</p>"
+                + "<p>Phishing Detector Team</p>"
                 + "<br/>";
             welcome = welcome.replaceAll("#NAME#", user.getName() + " " + user.getSurname());
             EmailContent emailContent = new EmailContent();
             emailContent.setFromEmail(Constant.APP_EMAIL);
             emailContent.setToEmail(user.getEmail());
-            emailContent.setSubject("Phishing Detractor Registration");
+            emailContent.setSubject("Phishing Detector Registration");
             emailContent.setContentMssg(welcome);
             emailContent.setRetryCount(0);
             emailContent.setRunDate(new Date());
@@ -197,13 +197,13 @@ public class AuthController {
                 + "<p><b>User Name: </b>  " + user.getEmail() + "</p>"
                 + "<p><b>Password: </b>  " + password + "</p>"
                 + "<p>Our Best</p>"
-                + "<p>Phishing Detractor Team</p>"
+                + "<p>Phishing Detector Team</p>"
                 + "<br/>";
             welcome = welcome.replaceAll("#NAME#", user.getName() + " " + user.getSurname());
             EmailContent emailContent = new EmailContent();
             emailContent.setFromEmail(Constant.APP_EMAIL);
             emailContent.setToEmail(user.getEmail());
-            emailContent.setSubject("Phishing Detractor Forgot Password");
+            emailContent.setSubject("Phishing Detector Forgot Password");
             emailContent.setContentMssg(welcome);
             emailContent.setRetryCount(0);
             emailContent.setRunDate(new Date());
