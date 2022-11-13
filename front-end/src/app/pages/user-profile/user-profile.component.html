@@ -1,5 +1,4 @@
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
-  style="min-height: 250px; background-image:
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" style="min-height: 250px; background-image:
   url(assets/img/theme/profile-cover.jpg); background-size: cover;
   background-position: center top;">
   <!-- Mask -->
@@ -14,8 +13,7 @@
           <div class="col-lg-3 order-lg-2">
             <div class="card-profile-image">
               <a href="javascript:void(0)">
-                <img src="assets/img/theme/profile-blue.png"
-                  class="rounded-circle">
+                <img src="assets/img/theme/profile-blue.png" class="rounded-circle">
               </a>
             </div>
           </div>
@@ -33,7 +31,7 @@
                 </div>
                 <div>
                   <span class="heading">{{userDetails.requestCount}}</span>
-                  <span class="description">Requests</span>
+                  <span class="description">URL Validation Request(s)</span>
                 </div>
                 <div>
                   <span class="heading"></span>
@@ -60,126 +58,197 @@
             <div>
               <i class="ni education_hat mr-2"></i> {{userDetails.roles}}
             </div>
-            <br/>
-              <hr class="my-4" />
-              <p>We are committed to keeping your data safe.
-                We respect your right to privacy and your right to make informed
-                choices about
-                how we collect, hold or use your personal data.
+            <br />
+            <hr class="my-4" />
+            <p>We are committed to keeping your data safe.
+              We respect your right to privacy and your right to make informed
+              choices about
+              how we collect, hold or use your personal data.
 
-                We will make the general analysis available. We will not share
-                your data
-                on its own.</p>
-              <hr class="my-4" />
-
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-8 order-xl-1">
-        <div class="card bg-secondary shadow">
-          <div class="card-header bg-white border-0">
-            <div class="row align-items-center">
-              <div class="col-8">
-                <h3 class="mb-0">My account</h3>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <form #updateProfile="ngForm"
-              (ngSubmit)="onUpdateProfile(updateProfile.value)">
-              <h6 class="heading-small text-muted mb-4">Update User information</h6>
-              <div class="pl-lg-4">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="name">Name</label>
-                      <input type="text" id= "name" name="name" class="form-control
-                        form-control-alternative" placeholder="name"
-                        [(ngModel)]="userDetails.name">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="surname">Surname</label>
-                      <input type="text" name="surname"  id="surname" class="form-control
-                        form-control-alternative"
-                        [(ngModel)]="userDetails.surname">
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="cellNumber">Cell
-                        Number</label>
-                      <input type="text" name="cellNumber" id="cellNumber" class="form-control
-                        form-control-alternative" placeholder="Cell Number"
-                        [(ngModel)]="userDetails.cellNumber">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="email">Email</label>
-                      <input type="text" name="email" id="email"  class="form-control
-                        form-control-alternative" placeholder="Email"
-                        [(ngModel)]="userDetails.email">
-                    </div>
-                  </div>
-
-                    <input type="number" name="id" [(ngModel)]="userDetails.id" hidden>
-                  <button type="submit" class="btn btn-primary my-4">Update</button>
-                </div>
-              </div>
-              <hr class="my-4" />
-            </form>
-
-
-            <form #updatePassword="ngForm"
-              (ngSubmit)="onUpdatePassword(updatePassword.value)">
-              <h6 class="heading-small text-muted mb-4">Update Login Details</h6>
-              <div class="pl-lg-4">
-                <div class="row">
-                  <div class="col-lg-3">
-                    <div class="form-group">
-                      <label class="form-control-label" for="oldPassword">Old
-                        Password</label>
-                      <input type="password" ngModel name="oldPassword" id="oldPassword"
-                        class="form-control form-control-alternative"
-                        placeholder="Old Password" value="">
-                    </div>
-                  </div>
-
-                  <div class="col-lg-3">
-                    <div class="form-group">
-                      <label class="form-control-label" for="newPassword">New
-                        Password</label>
-                      <input type="password" ngModel name="newPassword" id="newPassword"
-                        class="form-control form-control-alternative"
-                        placeholder="New Password" value="">
-                    </div>
-                  </div>
-
-                  <div class="col-lg-3">
-                    <div class="form-group">
-                      <label class="form-control-label"
-                        for="confirmPassword">Confirm Password</label>
-                      <input type="password" ngModel name="confirmPassword" id="confirmPassword"
-                        class="form-control form-control-alternative"
-                        placeholder="Confirm Password" value="">
-                    </div>
-                  </div>
-
-                    <input type="number" name="userId" [(ngModel)]="userDetails.id" hidden>
-                  <button type="submit" class="btn btn-primary my-4"> Update
-                  </button>
-                </div>
-              </div>
-              <hr class="my-4" />
-            </form>
+              We will make the general analysis available. We will not share
+              your data
+              on its own.</p>
+            <hr class="my-4" />
 
           </div>
         </div>
       </div>
     </div>
+    <div class="col-xl-8 order-xl-1">
+      <div class="card bg-secondary shadow">
+        <div class="card-header bg-white border-0">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h3 class="mb-0">My account</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form #updateProfile="ngForm" (ngSubmit)="onUpdateProfile(updateProfile.value)">
+            <h6 class="heading-small text-muted mb-4">Update User information</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="name">Name</label>
+                    <input required maxlength="50" minlength="2" id="name" ngModel name="name" #name="ngModel"
+                      type="text" class="form-control form-control-alternative" placeholder="name"
+                      [(ngModel)]="userDetails.name">
+                  </div>
+
+                  <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+                    <div *ngIf="name.errors.required">
+                      <p>Your name is required.</p>
+                    </div>
+                    <div *ngIf="name.errors.minlength">
+                      <p>Name must be at least 2 characters long and cannot be more than 50 characters
+                        long.</p>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="surname">Surname</label>
+                    <input name="surname" required maxlength="50" minlength="2" id="surname" ngModel #surname="ngModel"
+                      type="text" class="form-control form-control-alternative" [(ngModel)]="userDetails.surname">
+                  </div>
+
+                  <div *ngIf="surname.invalid && (surname.dirty || surname.touched)" class="alert alert-danger">
+                    <div *ngIf="surname.errors.required">
+                      <p> Your surname is required.</p>
+                    </div>
+                    <div *ngIf="surname.errors.minlength">
+                      <p>Surname must be at least 2 characters long and cannot be more than 50
+                        characters long.</p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="cellNumber">Cell Number</label>
+                    <input name="cellNumber" required minlength="10" id="cellNumber" ngModel #cellNumber="ngModel"
+                      type="text" class="form-control form-control-alternative" placeholder="Cell Number"
+                      [(ngModel)]="userDetails.cellNumber">
+                  </div>
+
+                  <div *ngIf="cellNumber.invalid && (cellNumber.dirty || cellNumber.touched)"
+                    class="alert alert-danger">
+                    <div *ngIf="cellNumber.errors.required">
+                      <p> Your cell number is required.</p>
+                    </div>
+                    <div *ngIf="cellNumber.errors.minlength">
+                      <p>Cell number must be 10 characters long</p>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="email">Email</label>
+                    <input required maxlength="50" id="email" ngModel name="email" #email="ngModel" type="text"
+                      class="form-control form-control-alternative" placeholder="Email" [(ngModel)]="userDetails.email">
+                  </div>
+
+                  <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger">
+                    <div *ngIf="email.errors.required">
+                      <p>Your email address is required.</p>
+                    </div>
+                    <div *ngIf="email.errors.maxlength">
+                      <p>The maximum lenght of email address is 50 characters</p>
+                    </div>
+                  </div>
+                </div>
+
+                <input type="number" name="id" [(ngModel)]="userDetails.id" hidden>
+
+                <input type="text" name="idNumber" [(ngModel)]="userDetails.idNumber" hidden>
+
+                <button [disabled]="name.invalid || surname.invalid || cellNumber.invalid || email.invalid"
+                  type="submit" class="btn btn-primary my-4">Update</button>
+              </div>
+            </div>
+            <hr class="my-4" />
+          </form>
+
+
+          <form #updatePassword="ngForm" (ngSubmit)="onUpdatePassword(updatePassword.value)">
+            <h6 class="heading-small text-muted mb-4">Update Login Details</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="oldPassword">Old
+                      Password</label>
+                    <input required minlength="8" id="oldPassword" ngModel name="oldPassword" #oldPassword="ngModel"
+                      type="password" class="form-control form-control-alternative" placeholder="Old Password" value="">
+                  </div>
+
+                  <div *ngIf="oldPassword.invalid && (oldPassword.dirty || oldPassword.touched)"
+                    class="alert alert-danger">
+                    <div *ngIf="oldPassword.errors.required">
+                      <p style="font-size: small;"> Old password is required.</p>
+                    </div>
+                    <div *ngIf="oldPassword.errors.minlength">
+                      <p style="font-size: small;">Password must be 8 characters long.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="newPassword">New Password</label>
+                    <input required minlength="8" id="newPassword" ngModel name="newPassword" #newPassword="ngModel"
+                      type="password" class="form-control form-control-alternative" placeholder="New Password" value="">
+                  </div>
+
+                  <div *ngIf="newPassword.invalid && (newPassword.dirty || newPassword.touched)"
+                    class="alert alert-danger">
+                    <div *ngIf="newPassword.errors.required">
+                      <p style="font-size: small;"> New password is required.</p>
+                    </div>
+                    <div *ngIf="newPassword.errors.minlength">
+                      <p style="font-size: small;">Password must be 8 characters long.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="confirmPassword">Confirm Password</label>
+                    <input required minlength="8" id="confirmPassword" ngModel name="confirmPassword"
+                      #confirmPassword="ngModel" type="password" class="form-control form-control-alternative"
+                      placeholder="Confirm Password" value="">
+                  </div>
+
+                  <div *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)"
+                    class="alert alert-danger">
+                    <div *ngIf="confirmPassword.errors.required">
+                      <p style="font-size: small;"> Confirm password is required.</p>
+                    </div>
+                    <div *ngIf="confirmPassword.errors.minlength">
+                      <p style="font-size: small;">Password must be 8 characters long.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <input type="number" name="userId" [(ngModel)]="userDetails.id" hidden>
+
+             
+              </div>
+
+              <button [disabled]="oldPassword.invalid || newPassword.invalid || confirmPassword.invalid" type="submit"
+              class="btn btn-primary my-4"> Update
+            </button>
+            </div>
+            <hr class="my-4" />
+          </form>
+
+        </div>
+      </div>
+    </div>
   </div>
+</div>

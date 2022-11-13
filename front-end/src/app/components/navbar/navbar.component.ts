@@ -42,6 +42,9 @@ export class NavbarComponent implements OnInit {
     return 'Dashboard';
   }
 
+  getCurrentUser(){
+    return this.currentUser = this.authService.getLoggedUser();
+  }
  
 
 }

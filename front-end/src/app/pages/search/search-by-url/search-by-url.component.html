@@ -70,12 +70,18 @@
                 <div class="col-lg-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-cell">Search By Url here </label>
-                    <input style="width: 100%;" ngModel name="url" type="text" id="input-cell"
-                      class="form-control form-control-alternative" placeholder="Validate URL" value="">
+                    <input required  id="url" ngModel name="url" #url="ngModel"
+                    style="width: 100%;"  type="text" class="form-control form-control-alternative" placeholder="Validate URL" value="">
+                  </div>
+
+                  <div *ngIf="url.invalid && (url.dirty || url.touched)" class="alert alert-danger">
+                    <div *ngIf="url.errors.required">
+                      <p> Please enter url</p>
+                    </div>
                   </div>
                 </div>
                 <div class="col-lg-12">
-                  <button type="submit" class="btn btn-primary my-4">Verify</button>
+                  <button [disabled]="url.invalid" type="submit" class="btn btn-primary my-4">Verify</button>
                 </div>
 
               </div>

@@ -21,15 +21,15 @@ export class UserProfileComponent implements OnInit {
 
   public userDetails: UserDetails;
   public dashboardData: DashboardData;
-  public loginResponse :LoginResponce;
-  public totalRequest: any;
+  public loginResponse: LoginResponce;
+
 
   constructor(private service: AuthServiceService,
     private toastr: ToastrService,
-    private router: Router, private dservice: DashboardService ) { }
+    private router: Router, private dservice: DashboardService) { }
 
   ngOnInit() {
-    this.totalRequest = 100; // todo call service
+
     this.currentUser = this.service.getLoggedUser();
     this.service.getUserById(this.currentUser).subscribe({
       next: (result) => {
@@ -48,12 +48,16 @@ export class UserProfileComponent implements OnInit {
   }
 
   onUpdatePassword(data: any) {
-       if (data.newPassword == data.confirmPassword) {
-      let user = this.currentUser;
+    console.log(JSON.stringify(data));
+    if (data.newPassword == data.confirmPassword) {
+      let user = this.service.getLoggedUser();
       this.service.changePassword(data, user).subscribe({
         next: (results) => {
-          console.log("Change Password request " + JSON.stringify(results));
-          this.toastr.success('Password updated successful!');
+           this.toastr.success('Password updated successful!');
+
+          this.loginResponse = this.service.getLoggedUser();
+          this.service.saveLoggedUser(this.loginResponse, data.newPassword);
+
         },
         error: (error) => {
           console.log(JSON.stringify(error));
@@ -61,7 +65,7 @@ export class UserProfileComponent implements OnInit {
         }
       })
     } else {
-      this.toastr.show('New password and confirm password do not match!');
+      this.toastr.error('New password and confirm password do not match!');
     }
 
   }
@@ -69,19 +73,38 @@ export class UserProfileComponent implements OnInit {
 
 
   onUpdateProfile(data: any) {
-    console.log( 'User details ' + JSON.stringify(data));
-     this.loginResponse = this.service.getLoggedUser();
-     this.service.updateProfile(data, this.loginResponse).subscribe({
-       next: (results) => {
-         console.log(JSON.stringify(results));
-         this.toastr.success('User details updated!');
-         this.loginResponse.setFullName(data.name + ' ' + data.surname);
-       },
-       error: (error) => {
-         console.log(JSON.stringify(error));
-         this.toastr.error(error.error.message);
-       }
-     })
+    
+    this.loginResponse = this.service.getLoggedUser();
+    this.service.updateProfile(data, this.loginResponse).subscribe({
+      next: (results) => {
+        console.log(JSON.stringify(results));
+
+        let loginRequest = {
+          password: this.loginResponse.password,
+          username: data.email
+        };
+
+
+        this.service.login(loginRequest).subscribe({
+
+          next: (login_results) => {
+            this.service.saveLoggedUser(login_results, this.loginResponse.password);
+          },
+          error: (error) => {
+            console.log("Error: " + JSON.stringify(error));
+            this.toastr.error('Unable to refresh token');
+          }
+        })
+
+        this.toastr.success('User details updated!');
+
+
+      },
+      error: (error) => {
+        console.log(JSON.stringify(error));
+        this.toastr.error(error.error.message);
+      }
+    })
   }
 
 }

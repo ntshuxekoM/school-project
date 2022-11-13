@@ -24,22 +24,44 @@
           <div class="text-muted text-center mt-2 mb-4"><small>Sign up</small></div>
         </div>
         <div class="card-body px-lg-5 py-lg-5">
-          <form #userRegistration = "ngForm" (ngSubmit) = "onClickSubmit(userRegistration.value)">
-            <div class="form-group" >
+          <form #userRegistration="ngForm" (ngSubmit)="onClickSubmit(userRegistration.value)">
+            <div class="form-group">
               <div class="input-group input-group-alternative mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                 </div>
-                <input class="form-control" name="name" ngModel placeholder="Name" type="text" ngModel required >
+                <input required maxlength="50" minlength="2" id="name" ngModel name="name" #name="ngModel"
+                  placeholder="Enter your name" type="text" class="form-control">
+              </div>
+
+              <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+                <div *ngIf="name.errors.required">
+                  <p>Your name is required.</p>
+                </div>
+                <div *ngIf="name.errors.minlength">
+                  <p>Name must be at least 2 characters long and cannot be more than 50 characters
+                    long.</p>
+                </div>
               </div>
             </div>
 
             <div class="form-group">
               <div class="input-group input-group-alternative mb-3">
-                <div class="input-group-prepend"> 
+                <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                 </div>
-                <input class="form-control" name="surname" ngModel placeholder="Surname" type="text" ngModel required>
+                <input name="surname" required maxlength="50" minlength="2" id="surname" ngModel #surname="ngModel"
+                  class="form-control" placeholder="Enter your surname" type="text">
+              </div>
+
+              <div *ngIf="surname.invalid && (surname.dirty || surname.touched)" class="alert alert-danger">
+                <div *ngIf="surname.errors.required">
+                  <p> Your surname is required.</p>
+                </div>
+                <div *ngIf="surname.errors.minlength">
+                  <p>Surname must be at least 2 characters long and cannot be more than 50
+                    characters long.</p>
+                </div>
               </div>
             </div>
 
@@ -48,7 +70,17 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-badge"></i></span>
                 </div>
-                <input class="form-control" name="idNumber" ngModel placeholder="ID Number" type="text" ngModel required>
+                <input name="idNumber" required minlength="13" id="idNumber" ngModel #idNumber="ngModel"
+                class="form-control" placeholder="Enter your ID number" type="text">
+              </div>
+
+              <div *ngIf="idNumber.invalid && (idNumber.dirty || idNumber.touched)" class="alert alert-danger">
+                <div *ngIf="idNumber.errors.required">
+                  <p> Your Id number is required.</p>
+                </div>
+                <div *ngIf="idNumber.errors.minlength">
+                  <p>ID number must be 13 characters long</p> 
+                </div>
               </div>
             </div>
 
@@ -57,7 +89,17 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-mobile-button"></i></span>
                 </div>
-                <input class="form-control" name="cellNumber" ngModel placeholder="Cell Number" type="text" ngModel required>
+                <input name="cellNumber" required minlength="10" id="cellNumber" ngModel #cellNumber="ngModel"
+                class="form-control" ngModel placeholder="Enter your cell number" type="text">
+              </div>
+
+              <div *ngIf="cellNumber.invalid && (cellNumber.dirty || cellNumber.touched)" class="alert alert-danger">
+                <div *ngIf="cellNumber.errors.required">
+                  <p> Your cell number is required.</p>
+                </div>
+                <div *ngIf="cellNumber.errors.minlength">
+                  <p>Cell number must be 10 characters long</p> 
+                </div>
               </div>
             </div>
 
@@ -66,7 +108,17 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                 </div>
-                <input class="form-control" name="email" ngModel placeholder="Email" type="email"  required>
+                <input required maxlength="50" id="email" ngModel name="email" #email="ngModel"
+                class="form-control" ngModel placeholder="Enter your email address" type="email">
+              </div>
+
+              <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger">
+                <div *ngIf="email.errors.required">
+                  <p>Your email address is required.</p>
+                </div>
+                <div *ngIf="email.errors.maxlength">
+                  <p>The maximum lenght of email address is 50 characters</p> 
+                </div>
               </div>
             </div>
 
@@ -75,12 +127,23 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                 </div>
-                <input class="form-control" name="password" ngModel placeholder="Password" type="password" ngModel required>
+                <input required minlength="8" id="password" ngModel name="password" #password="ngModel"
+                class="form-control"  ngModel placeholder="Enter your password" type="password">
+              </div>
+
+              <div *ngIf="password.invalid && (password.dirty || email.touched)" class="alert alert-danger">
+                <div *ngIf="password.errors.required">
+                  <p> Your password is required.</p>
+                </div>
+                <div *ngIf="password.errors.minlength">
+                  <p>Password must be 8 characters long.</p> 
+                </div>
               </div>
 
             </div>
-              <div class="text-center">
-              <button type="button" type="submit" class="btn btn-primary mt-4">Create account</button>
+            <div class="text-center">
+              <button [disabled]="name.invalid || surname.invalid || idNumber.invalid || cellNumber.invalid || email.invalid || password.invalid "
+              type="submit" class="btn btn-primary mt-4">Create account</button>
             </div>
           </form>
         </div>

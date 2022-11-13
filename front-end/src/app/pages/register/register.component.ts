@@ -16,13 +16,14 @@ export class RegisterComponent implements OnInit {
   }
 
   onClickSubmit(data: any) {
+    console.log("Registering user: "+JSON.stringify(data));
     this.service.registerUser(data).subscribe({
       next:(results) => {
         this.toastr.info(results.message);
         this.router.navigateByUrl("/login");
       },
       error: (error) => {
-        console.log(JSON.stringify(error));
+        console.log("Error: "+JSON.stringify(error));
         this.toastr.error(error.error.message);
       }
     })

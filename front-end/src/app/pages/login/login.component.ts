@@ -19,13 +19,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onClickSubmit(data: any) {
+    console.log("Login: "+JSON.stringify(data));
     this.service.login(data).subscribe({
       next: (results) => {
-        this.service.saveLoggedUser(results);
+        this.service.saveLoggedUser(results,data.password);
         this.router.navigateByUrl("/dashboard");
       },
       error: (error) => {
-        console.log(JSON.stringify(error));
+        console.log("Error: "+JSON.stringify(error));
         this.toastr.error('Invalid login details , Please enter the correct details');
       }
     })
