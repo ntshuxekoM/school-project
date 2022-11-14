@@ -49,11 +49,22 @@ jobs:
     - name: Docker push
       run: docker push ntshuxeko/phishing-detector:latest
       
-    - name: Copy docker-compose file
-      run: |
-        echo ${{ secrets.AWS_PRIVAT_KEY }} > private_key && chmod 600 private_key
-        scp -i private_key docker-compose.yaml ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}:${{ env.APPLICATION_PATH }}
-      
-    - name: Login to EC2 
-      run: ssh -i private_key ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}
+    - name: Copy docker-compose file to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ env.EC2_INSTANCE }}
+        username: ${{ env.AWS_USER }}
+        port: 22
+        key: ${{ secrets.AWS_PRIVAT_KEY }}
+        source: "docker-compose.yaml"
+        target: ${{ env.APPLICATION_PATH }}
+        
+    - name: SSH to server
+      uses: easingthemes/ssh-deploy@main
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.AWS_PRIVAT_KEY }}
+        REMOTE_HOST: ${{ env.EC2_INSTANCE }}
+        REMOTE_USER: ${{ env.AWS_USER }}
+        TARGET: ${{ env.APPLICATION_PATH }}
+    
 
