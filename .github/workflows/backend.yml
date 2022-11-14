@@ -39,7 +39,7 @@ jobs:
       run: docker build -t ntshuxeko/phishing-detector:latest .
     
     - name: Docker login
-      run: docker login -u ntshuxeko -p ${{ secret.DOCKER_TOKEN }}
+      run: docker login -u ntshuxeko -p ${{ secrets.DOCKER_TOKEN }}
 
     - name: Docker push
       run: docker push ntshuxeko/phishing-detector:latest
