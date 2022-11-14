@@ -16,6 +16,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./phishing-detector
 
     steps:
     - uses: actions/checkout@v3
@@ -26,4 +29,4 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file phishing-detector/pom.xml
+      run: mvn -B package --file pom.xml
