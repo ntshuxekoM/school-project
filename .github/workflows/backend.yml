@@ -28,5 +28,9 @@ jobs:
         java-version: '19'
         distribution: 'temurin'
         cache: maven
+        
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+      
+    - name: Maven clean package
+      run: mvn clean package
