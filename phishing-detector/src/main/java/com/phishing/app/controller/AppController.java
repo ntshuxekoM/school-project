@@ -202,14 +202,14 @@ public class AppController {
         List<BlackListSite> blackListSiteList = blackListSiteRepository.findByUrl(
             request.getUrl());
 
-        inValidUrl = blackListSiteList != null && blackListSiteList.size() > 0;
+        inValidUrl = blackListSiteList != null && !blackListSiteList.isEmpty();
 
         LOGGER.info("Is in black listed site? {}, URL: {}", inValidUrl, request.getUrl());
         if (!inValidUrl) {
 
             List<PhishingSite> phishingSiteList = phishingSiteRepository.findByUrl(
                 request.getUrl());
-            inValidUrl = phishingSiteList != null && phishingSiteList.size() > 0;
+            inValidUrl = phishingSiteList != null && !phishingSiteList.isEmpty();
 
             LOGGER.info("Is in phishing site table? {}, URL: {}", inValidUrl, request.getUrl());
         }
@@ -257,11 +257,6 @@ public class AppController {
 
         return count;
     }
-
-    /*public static void main(String[] args) throws IOException {
-        LOGGER.info("Must return true: "+isSuspicious("http://malware.testing.google.test/testing/malware/"));
-        LOGGER.info("Must return false: "+isSuspicious("https://www.jsonschema2pojo.org/"));
-    }*/
 
     private static boolean isSuspicious(String theUrl) {
         LOGGER.info("Checking if url is suspicious. URL: {} ", theUrl);
