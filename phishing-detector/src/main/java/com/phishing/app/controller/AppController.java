@@ -1,5 +1,14 @@
 package com.phishing.app.controller;
 
+import static com.phishing.app.utils.Constant.SAFE_BROWSING_URL;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phishing.app.bean.Client;
+import com.phishing.app.bean.SafeBrowsingRequest;
+import com.phishing.app.bean.SafeBrowsingResponse;
+import com.phishing.app.bean.ThreatEntry;
+import com.phishing.app.bean.ThreatInfo;
 import com.phishing.app.model.entities.BlackListSite;
 import com.phishing.app.model.entities.PhishingSite;
 import com.phishing.app.model.entities.User;
@@ -15,15 +24,18 @@ import com.phishing.app.repository.entities.UserRepository;
 import com.phishing.app.repository.entities.ValidateUrlRequestRepository;
 import com.phishing.app.service.DashboardService;
 import com.phishing.app.utils.Constant;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Scanner;
 import javax.validation.Valid;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,28 +161,19 @@ public class AppController {
             com.phishing.app.model.entities.ValidateUrlRequest validateUrlRequest = validateUrlRequestRepository.save(
                 buildRequest(optionalUser, request));
             if (optionalUser.isPresent()) {
-                //Validating URL
-                UrlValidator urlValidator = new UrlValidator();
-                if (urlValidator.isValid(request.getUrl())) {
-                    //TODO check if url is valid or not
 
-                    Random random = new Random();
-                    Thread.sleep(2000);
-                    if (random.nextBoolean()) {
+                if (isUrlValid(request.getUrl())) {
+
+                    if (checkIfUrlExistInOurDB(request) || isSuspicious(request.getUrl())
+                        || !isUrlLegit(request.getUrl())) {
                         savePhishingSite(request, optionalUser.get());
-                        validateUrlRequest.setSafeSite(true);
+                        validateUrlRequest.setSafeSite(false);
                         return ResponseEntity.ok().body(new MessageResponse(false, "Invalid URL"));
                     } else {
-                        validateUrlRequest.setSafeSite(false);
+                        validateUrlRequest.setSafeSite(true);
                         return ResponseEntity.ok().body(new MessageResponse(true, "Valid URL"));
                     }
 
-                  /*  if (totalPhishingWords(request.getUrl()) > 3 && isSuspicious(
-                        request.getUrl())) {
-                        return ResponseEntity.ok().body(new MessageResponse(false, "Invalid URL"));
-                    } else {
-                        return ResponseEntity.ok().body(new MessageResponse(true, "Valid URL"));
-                    }*/
                 } else {
                     LOGGER.error("Invalid URL: {}", request.getUrl());
                     return ResponseEntity.badRequest()
@@ -186,6 +189,33 @@ public class AppController {
             return ResponseEntity.internalServerError()
                 .body(new MessageResponse(false, "Service unavailable!"));
         }
+    }
+
+    private boolean isUrlValid(String url) {
+        //TODO check if URL is valid or not
+        return true;
+    }
+
+
+    private boolean checkIfUrlExistInOurDB(ValidateUrlRequest request) {
+        boolean inValidUrl;
+        List<BlackListSite> blackListSiteList = blackListSiteRepository.findByUrl(
+            request.getUrl());
+
+        inValidUrl = blackListSiteList != null && blackListSiteList.size() > 0;
+
+        LOGGER.info("Is in black listed site? {}, URL: {}", inValidUrl, request.getUrl());
+        if (!inValidUrl) {
+
+            List<PhishingSite> phishingSiteList = phishingSiteRepository.findByUrl(
+                request.getUrl());
+            inValidUrl = phishingSiteList != null && phishingSiteList.size() > 0;
+
+            LOGGER.info("Is in phishing site table? {}, URL: {}", inValidUrl, request.getUrl());
+        }
+        LOGGER.info("URL: {}, Is black listed? : {}", request.getUrl(), inValidUrl);
+
+        return inValidUrl;
     }
 
     private void savePhishingSite(ValidateUrlRequest request, User user) {
@@ -228,9 +258,83 @@ public class AppController {
         return count;
     }
 
-    private boolean isSuspicious(String url) {
-        //TODO https://developers.google.com/safe-browsing/v4/get-started
-        return false;
+    /*public static void main(String[] args) throws IOException {
+        LOGGER.info("Must return true: "+isSuspicious("http://malware.testing.google.test/testing/malware/"));
+        LOGGER.info("Must return false: "+isSuspicious("https://www.jsonschema2pojo.org/"));
+    }*/
+
+    private static boolean isSuspicious(String theUrl) {
+        LOGGER.info("Checking if url is suspicious. URL: {} ", theUrl);
+        boolean isSuspicious = false;
+        try {
+            URL url = new URL(SAFE_BROWSING_URL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonRequest = objectMapper.writeValueAsString(buildSafeBrowsingRequest(theUrl));
+            LOGGER.info("SafeBrowsingRequest Json Request: {}", jsonRequest);
+            wr.writeBytes(jsonRequest);
+            wr.flush();
+            wr.close();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String output;
+            StringBuffer response = new StringBuffer();
+
+            while ((output = in.readLine()) != null) {
+                response.append(output);
+            }
+            in.close();
+
+            SafeBrowsingResponse safeBrowsingResponse = (SafeBrowsingResponse) convertJsonToObject(
+                response.toString(), new SafeBrowsingResponse());
+
+            isSuspicious = safeBrowsingResponse != null && safeBrowsingResponse.getMatches() != null
+                && !safeBrowsingResponse.getMatches().isEmpty();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("Failed to check the url using google browse safe: {}", e);
+        }
+        LOGGER.info("URL: {}, isSuspicious: {}", theUrl, isSuspicious);
+        return isSuspicious;
+    }
+
+    private static SafeBrowsingRequest buildSafeBrowsingRequest(String theUrl) {
+
+        SafeBrowsingRequest request = new SafeBrowsingRequest();
+
+        Client client = new Client();
+        client.setClientId("Phishing Detector");
+        client.setClientVersion("1.0");
+        request.setClient(client);
+
+        ThreatInfo threatInfo = new ThreatInfo();
+        List<String> threatTypes = new ArrayList<>();
+        threatTypes.add("MALWARE");
+        threatTypes.add("SOCIAL_ENGINEERING");
+        threatInfo.setThreatTypes(threatTypes);
+
+        List<String> platformTypesList = new ArrayList<>();
+        platformTypesList.add("WINDOWS");
+        threatInfo.setPlatformTypes(platformTypesList);
+
+        List<String> threatEntryTypes = new ArrayList<>();
+        threatEntryTypes.add("URL");
+        threatInfo.setThreatEntryTypes(threatEntryTypes);
+
+        List<ThreatEntry> threatEntries = new ArrayList<>();
+        ThreatEntry threatEntry = new ThreatEntry();
+        threatEntry.setUrl(theUrl);
+        threatEntries.add(threatEntry);
+        threatInfo.setThreatEntries(threatEntries);
+
+        request.setThreatInfo(threatInfo);
+        return request;
     }
 
     private com.phishing.app.model.entities.ValidateUrlRequest buildRequest(
@@ -242,5 +346,21 @@ public class AppController {
         urlRequest.setLastUpdatedUser(user);
         return urlRequest;
     }
+
+    private static Object convertJsonToObject(String json, Object objectClass) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(json, objectClass.getClass());
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Error when converting Json to object: ", e);
+            return null;
+        }
+    }
+
+    private boolean isUrlLegit(String url) {
+        //TODO
+        return true;
+    }
+
 
 }

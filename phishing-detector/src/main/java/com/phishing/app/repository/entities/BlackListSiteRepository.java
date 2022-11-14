@@ -12,4 +12,5 @@ public interface BlackListSiteRepository extends JpaRepository<BlackListSite, Lo
     @Query("SELECT COUNT(createdDate) from BlackListSite o where EXTRACT(month FROM o.createdDate) = EXTRACT(month FROM sysdate())")
     int countForMonth();
     List<BlackListSite> findFirst5ByOrderBySiteName();
+    List<BlackListSite> findByUrl(String url);
 }
