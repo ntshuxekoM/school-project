@@ -1,9 +1,7 @@
 version: '3'
 services:
-
   mysql:
     image: mysql:8.0
-    restart: always
     container_name: mysql
     environment:
       - MYSQL_DATABASE=phishing_db
@@ -13,24 +11,22 @@ services:
     volumes:
       - db:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
+      
   phishing-detector:
     image: ntshuxeko/phishing-detector:latest
     container_name: phishing-detector
-    restart: always
-    ports:
-      - '8080:8080'
-    links:
+    depends_on: 
       - mysql
+    ports:
+      - 8080:8080
 
   front-end:
-    image: ./front-end
+    image: ntshuxeko/front-end:latest
     container_name: front-end
     ports:
       - 4200:80
     links:
       - phishing-detector
-
-
+        
 volumes:
   db:
