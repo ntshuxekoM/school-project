@@ -50,8 +50,10 @@ jobs:
       run: docker push ntshuxeko/phishing-detector:latest
       
     - name: Copy docker-compose file
-      run: scp -i ${{ secrets.AWS_PRIVAT_KEY }} docker-compose.yaml ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}:${{ env.APPLICATION_PATH }}
+      run: |
+        echo ${{ secrets.AWS_PRIVAT_KEY }} > private_key && chmod 600 private_key
+        scp -i private_key docker-compose.yaml ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}:${{ env.APPLICATION_PATH }}
       
     - name: Login to EC2 
-      run: ssh -i ${{ secrets.AWS_PRIVAT_KEY }} ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}
+      run: ssh -i private_key ${{ env.AWS_USER }}@${{ env.EC2_INSTANCE }}
 
