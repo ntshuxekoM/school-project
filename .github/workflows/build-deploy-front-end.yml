@@ -1,0 +1,57 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build and Deploy UI
+
+env:
+  AWS_USER: ubuntu
+  EC2_INSTANCE: ec2-13-244-123-141.af-south-1.compute.amazonaws.com
+  APPLICATION_PATH: /home/ubuntu/application
+  APP_NAME: covid-ui
+  DOCKER_REPOSITORY: ntshuxeko
+  DOCKER_USERNAME: ntshuxeko
+  
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./front-end
+
+      strategy:
+        matrix:
+          node-version: [ 14.x, 16.x, 18.x ]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Run npm install
+      run: npm install
+
+    - name: Run npm build
+      run: run npm build
+
+    - name: Docker build and Tag
+      run: docker build -t ${{ env.DOCKER_REPOSITORY }}/${{ env.APP_NAME }}:latest .
+
+    - name: Docker login
+      run: docker login -u ${{ env.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Docker push
+      run: docker push ${{ env.DOCKER_REPOSITORY }}/${{ env.APP_NAME }}:latest
+
