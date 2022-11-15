@@ -11,8 +11,6 @@ env:
 on:
   push:
     branches: [ "master" ]
-    paths:
-      - ./phishing-detector
 
 jobs:
   build:

@@ -12,8 +12,6 @@ env:
 on:
   push:
     branches: [ "master" ]
-    paths:
-      - ./${{ env.APP_NAME }}
 
 jobs:
   build:
