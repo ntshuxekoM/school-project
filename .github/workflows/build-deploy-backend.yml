@@ -12,7 +12,7 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - ./${{ env.APP_NAME }}
+      - ./phishing-detector
 
 jobs:
   build:
