@@ -44,7 +44,7 @@ jobs:
       run: npm install
 
     - name: Run npm build
-      run: run npm build
+      run: npm run build
 
     - name: Docker build and Tag
       run: docker build -t ${{ env.DOCKER_REPOSITORY }}/${{ env.APP_NAME }}:latest .
