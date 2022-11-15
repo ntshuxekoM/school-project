@@ -4,13 +4,15 @@ env:
   AWS_USER: ubuntu
   EC2_INSTANCE: ec2-13-244-123-141.af-south-1.compute.amazonaws.com
   APPLICATION_PATH: /home/ubuntu/application
-  APP_NAME: covid-ui
+  APP_NAME: front-end
   DOCKER_REPOSITORY: ntshuxeko
   DOCKER_USERNAME: ntshuxeko
   
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - ./${{ env.APP_NAME }}
 
 jobs:
   build:
@@ -18,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front-end
+        working-directory: ./${{ env.APP_NAME }}
 
     strategy:
       matrix:
