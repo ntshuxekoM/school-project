@@ -13,6 +13,7 @@ import com.phishing.app.model.entities.BlackListSite;
 import com.phishing.app.model.entities.PhishingSite;
 import com.phishing.app.model.entities.User;
 import com.phishing.app.payload.DashboardData;
+import com.phishing.app.payload.FeatureExtraction;
 import com.phishing.app.payload.MessageResponse;
 import com.phishing.app.payload.Site;
 import com.phishing.app.payload.UserUrlRequest;
@@ -29,6 +30,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -165,7 +167,7 @@ public class AppController {
                 if (isUrlValid(request.getUrl())) {
 
                     if (checkIfUrlExistInOurDB(request) || isSuspicious(request.getUrl())
-                        || !isUrlLegit(request.getUrl())) {
+                        || !isSiteLegit(request.getUrl())) {
                         savePhishingSite(request, optionalUser.get());
                         validateUrlRequest.setSafeSite(false);
                         return ResponseEntity.ok().body(new MessageResponse(false, "Invalid URL"));
@@ -191,25 +193,33 @@ public class AppController {
         }
     }
 
-    private boolean isUrlValid(String url) {
-        //TODO check if URL is valid or not
-        return true;
-    }
-
 
     private boolean checkIfUrlExistInOurDB(ValidateUrlRequest request) {
         boolean inValidUrl;
-        List<BlackListSite> blackListSiteList = blackListSiteRepository.findByUrl(
-            request.getUrl());
+        List<BlackListSite> blackListSiteList = blackListSiteRepository.findAll();
 
-        inValidUrl = blackListSiteList != null && !blackListSiteList.isEmpty();
+        BlackListSite blackListSite = null;
+        if (blackListSiteList != null && !blackListSiteList.isEmpty()) {
+            blackListSite = blackListSiteList.stream().filter(bs -> bs.getUrl().trim()
+                .equalsIgnoreCase(request.getUrl().trim())).findAny().orElse(null);
+        }
+
+        inValidUrl = blackListSite != null;
 
         LOGGER.info("Is in black listed site? {}, URL: {}", inValidUrl, request.getUrl());
         if (!inValidUrl) {
 
-            List<PhishingSite> phishingSiteList = phishingSiteRepository.findByUrl(
-                request.getUrl());
-            inValidUrl = phishingSiteList != null && !phishingSiteList.isEmpty();
+            List<PhishingSite> phishingSiteList = phishingSiteRepository.findAll();
+
+            PhishingSite phishingSite = null;
+
+            if (phishingSiteList != null && !phishingSiteList.isEmpty()) {
+                phishingSite = phishingSiteList.stream()
+                    .filter(ps -> ps.getUrl().trim().equalsIgnoreCase(request.getUrl())).findAny()
+                    .orElse(null);
+            }
+
+            inValidUrl = phishingSite != null;
 
             LOGGER.info("Is in phishing site table? {}, URL: {}", inValidUrl, request.getUrl());
         }
@@ -232,30 +242,6 @@ public class AppController {
         } catch (Exception e) {
             LOGGER.error("Error when saving site: ", e);
         }
-    }
-
-
-    private static int totalPhishingWords(String link) throws Exception {
-        int count = 0;
-
-        URL url = new URL(link);
-        Scanner scanner = new Scanner(url.openStream());
-
-        while (scanner.hasNext()) {
-            if (scanner.next() != null && !scanner.next().trim().isEmpty()) {
-                for (String word : Constant.PHISHING_WORDS) {
-                    if (scanner.next().trim().toLowerCase().contains(word.toLowerCase())) {
-                        count++;
-                        LOGGER.info(
-                            "Phishing word detected. [phishing word: {}, Scanned word: {}, Url: {}]",
-                            word, scanner.next().trim(), link);
-                    }
-                }
-            }
-
-        }
-
-        return count;
     }
 
     private static boolean isSuspicious(String theUrl) {
@@ -312,10 +298,21 @@ public class AppController {
         List<String> threatTypes = new ArrayList<>();
         threatTypes.add("MALWARE");
         threatTypes.add("SOCIAL_ENGINEERING");
+        threatTypes.add("THREAT_TYPE_UNSPECIFIED");
+        threatTypes.add("UNWANTED_SOFTWARE");
+        threatTypes.add("POTENTIALLY_HARMFUL_APPLICATION");
         threatInfo.setThreatTypes(threatTypes);
 
         List<String> platformTypesList = new ArrayList<>();
+        platformTypesList.add("PLATFORM_TYPE_UNSPECIFIED");
         platformTypesList.add("WINDOWS");
+        platformTypesList.add("LINUX");
+        platformTypesList.add("ANDROID");
+        platformTypesList.add("OSX");
+        platformTypesList.add("IOS");
+        platformTypesList.add("ANY_PLATFORM");
+        platformTypesList.add("ALL_PLATFORMS");
+        platformTypesList.add("CHROME");
         threatInfo.setPlatformTypes(platformTypesList);
 
         List<String> threatEntryTypes = new ArrayList<>();
@@ -352,9 +349,182 @@ public class AppController {
         }
     }
 
-    private boolean isUrlLegit(String url) {
-        //TODO
-        return true;
+    private boolean isSiteLegit(String url) {
+        boolean isLegit = true;
+        FeatureExtraction featureExtraction = new FeatureExtraction();
+        /**Secured URL should contain HTTPS, if not, it might be a phishing URL*/
+        featureExtraction.setUrlSecured(isSiteSecured(url));
+
+        /**
+         * Checking if the site contains words that are commonly used for phishing
+         * */
+        featureExtraction.setUrlContainPhishingWords(totalPhishingWords(url) > 0);
+
+        /**
+         * URLs may have IP address instead of domain name. If an IP
+         * address is used as an alternative of the domain name in the URL,
+         * we can be sure that someone is trying to steal personal information with this URL.
+         * */
+        featureExtraction.setUrlContainIP(containIP(url));
+
+        /**Using “@” symbol in the URL leads the browser to ignore everything preceding
+         the “@” symbol and the real address often follows the “@” symbol.*/
+        featureExtraction.setUrlContainAtSymbol(url.contains("@"));
+
+        /**Phishers can use long URL to hide the doubtful part in the address bar.
+         In this project, if the length of the URL is greater than or equal 54 characters then
+         the URL classified as phishing otherwise legitimate.*/
+        featureExtraction.setInvalidUrlLength(url.length() > 55);
+
+        /**
+         * The existence of “//” within the URL path means that the user will be redirected to another
+         * website. The location of the “//” in URL is computed. if the URL starts with “HTTP”, that
+         * means the “//” should appear in the sixth position. However, if the URL employs “HTTPS” then
+         * the “//” should appear in seventh position.
+         */
+        featureExtraction.setUrlContainForwardSlashInWrongPosition(
+            UrlContainForwardSlashInWrongPosition(url));
+
+        /**
+         * The dash symbol is rarely used in legitimate URLs.
+         * Phishers tend to add prefixes or suffixes separated by (-) to
+         * the domain name so that users feel that they are dealing with a legitimate webpage.
+         * */
+        featureExtraction.setUrlContainDash(url.contains("-"));
+
+        if (getPhishingChecksCount(featureExtraction) > 2) {
+            isLegit = false;
+        }
+
+        LOGGER.info("URL: {}, Feature Extraction {}", url, featureExtraction);
+        return isLegit;
+    }
+
+    private static int getPhishingChecksCount(FeatureExtraction featureExtraction) {
+        int phishingBenchMark = 0;
+        if (!featureExtraction.isUrlSecured()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isUrlContainPhishingWords()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isUrlContainIP()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isUrlContainAtSymbol()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isInvalidUrlLength()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isUrlContainForwardSlashInWrongPosition()) {
+            phishingBenchMark++;
+        }
+
+        if (featureExtraction.isUrlContainDash()) {
+            phishingBenchMark++;
+        }
+
+        LOGGER.info("Phishing Bench Mark: {}", phishingBenchMark);
+
+        return phishingBenchMark;
+    }
+
+
+    /**
+     * The existence of “//” within the URL path means that the user will be redirected to another
+     * website. The location of the “//” in URL is computed. if the URL starts with “HTTP”, that
+     * means the “//” should appear in the sixth position. However, if the URL employs “HTTPS” then
+     * the “//” should appear in seventh position.
+     */
+    private boolean UrlContainForwardSlashInWrongPosition(String url) {
+        int index = url.indexOf("//");
+        LOGGER.info("URL: {}, Index of //: {}", url, index);
+        if (index >= 5) {
+            if (index >= 6) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+
+    /**
+     * URLs may have IP address instead of domain name. If an IP address is used as an alternative
+     * of the domain name in the URL, we can be sure that someone is trying to steal personal
+     * information with this URL.
+     */
+    private boolean containIP(String url) {
+        try {
+            InetAddress ip = InetAddress.getByName(new URL(url)
+                .getHost());
+            LOGGER.info("URL: {}, HostAddress: {},HostName: {} ", url, ip.getHostAddress(),
+                ip.getHostName());
+            if (url.contains(ip.getHostAddress())) {
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.error("Invalid URL: {}", url);
+        }
+
+        return false;
+    }
+
+    private boolean isSiteSecured(String url) {
+        return url.contains("https");
+    }
+
+    private int totalPhishingWords(String link) {
+        int count = 0;
+
+        try {
+            URL url = new URL(link);
+            Scanner scanner = new Scanner(url.openStream());
+
+            while (scanner.hasNext()) {
+                if (scanner.next() != null && !scanner.next().trim().isEmpty()) {
+                    for (String word : Constant.PHISHING_WORDS) {
+                        if (scanner.next().trim().toLowerCase().contains(word.toLowerCase())) {
+                            count++;
+                            LOGGER.info(
+                                "Phishing word detected. [phishing word: {}, Scanned word: {}, Url: {}]",
+                                word, scanner.next().trim(), link);
+                        }
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("Unable to count phishing word: ", e);
+        }
+
+        return count;
+    }
+
+
+    private boolean isUrlValid(String url) {
+        try {
+            new URL(url).toURI();
+
+            HttpURLConnection huc = (HttpURLConnection) new URL(url).openConnection();
+            int responseCode = huc.getResponseCode();
+            LOGGER.error("URL Response code: {}", responseCode);
+            return responseCode == HttpURLConnection.HTTP_OK;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("Invalid Url, [URL: ]", url, e);
+            return false;
+        }
     }
 
 
