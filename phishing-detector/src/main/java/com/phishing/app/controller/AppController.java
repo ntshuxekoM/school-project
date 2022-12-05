@@ -70,6 +70,13 @@ public class AppController {
     @Autowired
     private PhishingSiteRepository phishingSiteRepository;
 
+    /**
+     * This method returns dashboard data used for reporting This include total number of
+     * blacklisted sites,registered users total number of verification requests sent,and total
+     * phishing urls
+     * <p>
+     * Only users with general user role (ROLE_USER) can access this method
+     */
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/get-dashboard-data/{userId}")
     public ResponseEntity<?> getDashboardData(@PathVariable Long userId) {
@@ -102,6 +109,10 @@ public class AppController {
 
     }
 
+
+    /**
+     * Find and returns all the url request sent by user
+     */
     @GetMapping("/find_all_user_url_request/{userId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> findAllUserUrlRequest(@PathVariable Long userId) {
@@ -129,6 +140,10 @@ public class AppController {
         }
     }
 
+
+    /**
+     * Finds and return all the list of blacklisted sites
+     */
     @GetMapping("/find_all_blacklisted_sites")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> findAllBlacklistedSites() {
@@ -153,7 +168,18 @@ public class AppController {
         }
     }
 
-
+    /**
+     * This methods checks if a URL is a phishing URL or not
+     * First we check if the url exist in table that contains a list of blacklisted sites or
+     * in a table that contains a list of phishing sites.
+     *
+     * If the url does not exist in our database, we use google safe browsing API to check
+     * if the URL is not listed as an "unsafe" url on google
+     *
+     * Finally, we use an algorithm to analyse the url and
+     * decide if the url might be a phishing url or not
+     *
+     */
     @PostMapping("/validate-url")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> validateUrl(@Valid @RequestBody ValidateUrlRequest request) {
@@ -194,6 +220,13 @@ public class AppController {
     }
 
 
+    /**
+     * This method checks if the url exist in our database
+     *
+     * First we check if the url exist in black list site table
+     * if it does not exist, we check if the url
+     * exist in phishing site table
+     * */
     private boolean checkIfUrlExistInOurDB(ValidateUrlRequest request) {
         boolean inValidUrl;
         List<BlackListSite> blackListSiteList = blackListSiteRepository.findAll();
@@ -228,6 +261,9 @@ public class AppController {
         return inValidUrl;
     }
 
+    /**
+     * This method save url that has been identified as phishing site
+     * */
     private void savePhishingSite(ValidateUrlRequest request, User user) {
         try {
             LOGGER.info("Saving phishing site. URL: {}, User ID: {}", request.getUrl(),
@@ -244,6 +280,10 @@ public class AppController {
         }
     }
 
+    /**
+     * This method checks if a url is suspicious or not,
+     * To do so we use google safe browsing API
+     * */
     private static boolean isSuspicious(String theUrl) {
         LOGGER.info("Checking if url is suspicious. URL: {} ", theUrl);
         boolean isSuspicious = false;
@@ -285,6 +325,9 @@ public class AppController {
         return isSuspicious;
     }
 
+    /**
+     * Building safe browsing request
+     * */
     private static SafeBrowsingRequest buildSafeBrowsingRequest(String theUrl) {
 
         SafeBrowsingRequest request = new SafeBrowsingRequest();
@@ -349,6 +392,11 @@ public class AppController {
         }
     }
 
+
+    /**
+     * This method determine if a url is a phishing url or not
+     * by extracting the url elements and analyse them
+     * */
     private boolean isSiteLegit(String url) {
         boolean isLegit = true;
         FeatureExtraction featureExtraction = new FeatureExtraction();
@@ -392,6 +440,10 @@ public class AppController {
          * */
         featureExtraction.setUrlContainDash(url.contains("-"));
 
+        /***
+         *If the total number of phishing characteristics is 3 or more
+         * We return false, meaning the site/url is not safe
+         */
         if (getPhishingChecksCount(featureExtraction) > 2) {
             isLegit = false;
         }
@@ -400,6 +452,11 @@ public class AppController {
         return isLegit;
     }
 
+
+    /**
+     * This method return the total number of url check that
+     * are identified as characteristics of a phishing url
+     * */
     private static int getPhishingChecksCount(FeatureExtraction featureExtraction) {
         int phishingBenchMark = 0;
         if (!featureExtraction.isUrlSecured()) {
@@ -478,10 +535,19 @@ public class AppController {
         return false;
     }
 
+    /**
+     * Check if the url is secured
+     * URL that are secured should contain https
+     * */
     private boolean isSiteSecured(String url) {
         return url.contains("https");
     }
 
+
+    /**
+     * This method calculate the total number of common words used for phishing
+     * on the site/url
+     * */
     private int totalPhishingWords(String link) {
         int count = 0;
 
@@ -511,6 +577,9 @@ public class AppController {
     }
 
 
+    /**
+     * Check if the url is valid or not
+     * */
     private boolean isUrlValid(String url) {
         try {
             new URL(url).toURI();

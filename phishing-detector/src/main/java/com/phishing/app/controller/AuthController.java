@@ -62,6 +62,11 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
 
+    /**
+     * Login/signin rest service
+     * If the login details are valid, this service will return a token
+     * together with other details such as user ID, ect that are related to the login user
+     * */
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -82,6 +87,10 @@ public class AuthController {
                 userDetails.getEmail(), roles, userDetails.getFullName()));
     }
 
+    /**
+     * Rest service to create user profile
+     * By default we assign general role (ROLE_USER) to the user
+     * */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
@@ -131,6 +140,12 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse(true, "User registered successfully!"));
     }
 
+
+    /**
+     * Rest service to reset user password
+     * If the email address is valid(linked to an account), the service will generate a
+     * random password and send it to the user via an email
+     * */
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPassRequest request) {
         String email = request.getEmail();
@@ -153,6 +168,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * This method save "registration" email content in the database
+     * The saved record will be retrieved by the timer (see @ScheduledTasks)
+     * and processed, and an email will be sent if the email address is valid
+     * */
     private void saveRegisterEmailContent(User user, String password) {
         try {
             LOGGER.info("Saving registration email content for [Name: {}, Surname: {}, email: {}]",
@@ -184,6 +204,11 @@ public class AuthController {
         }
     }
 
+    /**
+     * This method save forgot password email content in the database
+     * The saved record will be retrieved by the timer (see @ScheduledTasks)
+     * and processed, and an email will be sent if the email address is valid
+     * */
     private void saveForgotPassEmailContent(User user, String password) {
         try {
             LOGGER.info(
@@ -215,6 +240,9 @@ public class AuthController {
         }
     }
 
+    /**
+     * A method to generate a random password
+     * */
     public String generatePassword() {
 
         int leftLimit = 97; // letter 'a'

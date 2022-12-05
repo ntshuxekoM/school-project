@@ -14,6 +14,12 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @Configuration
 public class EmailConfig {
 
+
+    /**
+     * Email server configs
+     * The below details/configs are used as to send
+     * app emails
+     * */
     @Bean
     public JavaMailSender getMailSender() throws Exception {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

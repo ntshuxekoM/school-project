@@ -32,6 +32,10 @@ public class DashboardService {
     @Autowired
     private PhishingSiteRepository phishingSiteRepository;
 
+
+    /**
+     * Check if user has admin rights or not
+     * */
     public boolean hasAdminRight(Set<Role> roles) {
         boolean isAdmin = false;
         if (roles != null && !roles.isEmpty()) {
@@ -45,6 +49,9 @@ public class DashboardService {
         return isAdmin;
     }
 
+    /**
+     * Returns blacklisted urls data
+     * */
     public CardData getBlackListedUrlsCard() {
         CardData data = new CardData();
         data.setTotal(blackListSiteRepository.count());
@@ -53,6 +60,9 @@ public class DashboardService {
         return data;
     }
 
+    /**
+     * Returns register user details data
+     * */
     public CardData getUserCard() {
         CardData data = new CardData();
         data.setTotal(userRepository.count());
@@ -61,6 +71,10 @@ public class DashboardService {
         return data;
     }
 
+
+    /**
+     * Returns the data about verification request sent by users
+     * */
     public CardData getVerificationCard() {
         CardData data = new CardData();
         data.setTotal(validateUrlRequestRepository.count());
@@ -69,6 +83,10 @@ public class DashboardService {
         return data;
     }
 
+
+    /**
+     * Returns data about phishing urls
+     * */
     public CardData getPhishingUrlsCard() {
         CardData data = new CardData();
         data.setTotal(phishingSiteRepository.count());
@@ -77,6 +95,9 @@ public class DashboardService {
         return data;
     }
 
+    /**
+     * Returns a list of register users details
+     * */
     public List<UserDetails> getUserDetailsList() {
         List<UserDetails> userDetailsList = null;
         List<User> userList = userRepository.findFirst5ByOrderByName();
@@ -96,6 +117,9 @@ public class DashboardService {
         return userDetailsList;
     }
 
+    /**
+     * Returns a list of blacklisted sites
+     * */
     public List<Site> getSiteList() {
         List<Site> list = null;
         List<BlackListSite> siteList = blackListSiteRepository.findFirst5ByOrderBySiteName();
@@ -109,6 +133,10 @@ public class DashboardService {
         return list;
     }
 
+
+    /**
+     * Returns a list of user URL requests
+     * */
 
     public List<UserUrlRequest> getUserUrlRequests(User user) {
 
